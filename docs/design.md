@@ -14,6 +14,25 @@ Plus tard : le **climat urbain** — îlots de chaleur, eaux pluviales, renatura
 **Un seul mod**, organisé en modules. Ce que d'autres mods font déjà bien, on le déclare en
 dépendance au lieu de le refaire.
 
+## Intention (03/10/2026, réponses de l'humain)
+
+- **Public** : d'abord pour la partie de l'humain, mais **publié** sur Paradox Mods.
+- **Propos** : **montrer** aux gens qu'un avenir sans voiture personnelle ni camion est possible.
+  Démonstratif plus que punitif.
+- **Climat** : second temps, mais ambition réelle — montrer comment les villes résolvent le
+  réchauffement (pas seulement de l'ambiance).
+- **Priorité : le POC.** Prouver vite que le mod fonctionne et qu'un futur sans pollution ni
+  réchauffement est jouable. Chaque module commence par sa version minimale démontrable.
+- **Contexte** : l'humain hésitait à faire un jeu from scratch ; le projet explore aussi ce qu'on
+  peut faire avec Claude + CS2.
+
+## Ton
+
+Optimiste (« on y est arrivé à temps »), infrastructure **visible et belle**, routines matérielles
+(le train-poubelle du mardi), coûts réels (transbordement, exceptions assumées). Éviter le moralisme
+(récompenser plutôt que punir la voiture), le techno-solutionnisme, le solarpunk d'enclave, la
+nostalgie anti-ville. Sources : `references/fiction-et-pensee-urbaine.md`.
+
 ## Modules
 
 | # | Module | État | Faisabilité |
@@ -86,6 +105,58 @@ InfoLoom (91433) pour vérifier la part modale.
 
 Liens : `https://mods.paradoxplaza.com/mods/<ID>/Windows`
 
+## Banque d'idées (03/10/2026)
+
+Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées** : l'ordre se décide au
+`/next`. Faisabilité : `references/capacites-vanilla.md`. Précédents : `references/monde-reel.md`,
+`references/fiction-et-pensee-urbaine.md`.
+
+**Fret et dernier kilomètre**
+- **Local Hub + vélo-cargo** : micro-dépôt alimenté par rail ou tram, rayon ≈ 1,5 km, ≈ 50 % des
+  marchandises éligibles (CycleLogistics). Leviers : vente `SaleFlags.Virtual`, interception
+  `ResourceBuyer`, `DeliveryTruckSelectData`.
+- **Cargo tram** : raccourci = ligne Cargo Train sur voies mixtes Train|Tram en voirie ; complet =
+  ligne, arrêt, véhicule tram clonés en mode cargo.
+- **Cargo tram de nuit** : voyageurs le jour, fret la nuit (Francfort, Karlsruhe).
+- **Train de tournée** : ligne cargo en boucle par micro-hubs (Always Coming Home).
+- **Métro de marchandises façon Chicago** : tunnels jusqu'aux sous-sols ; fin de partie, très cher.
+- **Usine embranchée** : flux réguliers, peu d'origines (Dresde, Chicago).
+- **Rail plus attractif par donnée** : coûts de pathfinding du fret.
+
+**Déchets**
+- **Gare de compactage + train-poubelle → incinérateur embranché qui chauffe la ville** (Staten
+  Island, binliners, Spittelau). Mâchefer réexpédié par train.
+- **Tram-collecte de quartier** (Cargo-Tram Zurich).
+- **Décharge-mine** : décharge pleine = gisement exporté par train (Walkaway).
+
+**Mobilité des personnes** (idées de l'humain, recherche en cours)
+- **Voitures partagées bimodes rail-route** : roulent en ville, montent sur les rails, passent en
+  automatique et s'intercalent entre les trains (RUF, PRT, DMV japonais).
+- **Trains porte-voitures** (Autozug, Le Shuttle) : la voiture reste aux portes de la ville.
+- **Trains et métros automatiques** (ligne 14, VAL, Copenhague).
+
+**Voiture et espace public**
+- **Secteurs à la gantoise** : politique de district « filtre modal » + vraies restrictions de voies
+  posées par notre système (les `Forbid*` vanilla ne sont que des surcoûts).
+- **Exception honnête** : « zéro camion » par district avec exemptions visibles (Ecotopia).
+- **Assemblée de quartier** : piétonniser un district = creux de bonheur pendant le chantier, puis
+  hausse, commerces +30 % (Poblenou).
+- **Rues aux écoles / cours Oasis**.
+
+**Climat**
+- **Carte de chaleur** (`CellMapSystem<T>`) : bitume et voiture la montent, canopée et eau la
+  baissent ; effet santé en été. Pas d'effet linéaire « +1 arbre » : seuil ≈ 30 % de canopée.
+- **Canicule fondatrice** : événement qui frappe les districts minéraux (Ministry for the Future).
+- **Eaux pluviales** : réveiller `SoilWaterSystem` (inondation par la pluie, code mort) ; rue-éponge,
+  places-bassins (Copenhague), **rue-ruisseau** (Ecotopia).
+- **Friche qui dépollue** (Nausicaä) ; **eau comme plafond de croissance** (Pacific Edge).
+
+**Lecture et pédagogie**
+- **Panneau donut** par district : plancher social (proximité des 6 fonctions, bonheur) / plafond
+  écologique (pollution, part voiture).
+- **Chirper** : « le saumon est revenu dans la rivière » ; incinérateur à la Hundertwasser.
+- Idée lointaine : **téléphérique de fret** (Low-tech Magazine).
+
 ## Pourquoi un mod et pas un jeu
 
 Une conversation du 11/06/2026 avait conclu « pas de mod » sur des faits périmés (« pas d'outils
@@ -97,8 +168,8 @@ deux trajectoires, équité et climat comme systèmes de premier rang — ça ne
 **Position** : la mobilité et le fret sont ce qui amuse *et* ce qui est modable → le mod. Le
 prototype web reste la maison du GDD si la flèche du temps redevient le sujet.
 
-## Prochain pas : le train-poubelle
+## Prochain pas : à rediscuter
 
-Plus faisable que le cargo tram, plus visible que le Local Hub, et l'image est forte : un train de
-déchets qui sort de la ville au lieu d'une file de bennes. `Garbage` étant une ressource ordinaire,
-le futur métro de marchandises la transportera gratuitement : un seul réseau de fret.
+Le train-poubelle était le candidat (faisable, image forte, `Garbage` = ressource ordinaire donc un
+seul réseau de fret). Remis en question le 03/10/2026 : Tigons Rail Infrastructure (133250) a déjà
+des « Train Garbage Yards » d'export — à tester en jeu. Le choix du premier POC se fait au `/next`.
