@@ -23,6 +23,9 @@ dépendance au lieu de le refaire.
   réchauffement (pas seulement de l'ambiance).
 - **Priorité : le POC.** Prouver vite que le mod fonctionne et qu'un futur sans pollution ni
   réchauffement est jouable. Chaque module commence par sa version minimale démontrable.
+- **Visuel : pas une priorité.** Aucun modèle 3D créé : **réemploi des meshes vanilla** (prefabs
+  clonés) ou formes neutres (« carrés verts »). L'humain (dev frontend) ne fait ni code de jeu ni
+  asset : Claude fait tout.
 - **Contexte** : l'humain hésitait à faire un jeu from scratch ; le projet explore aussi ce qu'on
   peut faire avec Claude + CS2.
 
@@ -129,11 +132,29 @@ Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées*
 - **Tram-collecte de quartier** (Cargo-Tram Zurich).
 - **Décharge-mine** : décharge pleine = gisement exporté par train (Walkaway).
 
-**Mobilité des personnes** (idées de l'humain, recherche en cours)
+**Mobilité des personnes** (idées de l'humain — `references/mobilite-personnes.md`)
 - **Voitures partagées bimodes rail-route** : roulent en ville, montent sur les rails, passent en
-  automatique et s'intercalent entre les trains (RUF, PRT, DMV japonais).
-- **Trains porte-voitures** (Autozug, Le Shuttle) : la voiture reste aux portes de la ville.
-- **Trains et métros automatiques** (ligne 14, VAL, Copenhague).
+  automatique et s'intercalent entre les trains (RUF, PRT). Vrai bimode très dur en CS2 (aucun
+  véhicule ne change de réseau) → POC : **navette-capsule automatique** (véhicule métro/tram cloné,
+  4-10 places, intervalle très court) depuis un **parking-relais** en lisière (Heathrow ULTra).
+- **Trains porte-voitures** (Autozug, Le Shuttle) : littéral dur et sans effet de sim → traduit en
+  parking-relais en gare d'entrée de ville ; version fret = autoroute ferroviaire à la connexion
+  extérieure (coefficients `OutsideTradeParameterData`).
+- **Trains et métros automatiques** (ligne 14, Copenhague 24 h/24, AutoHaul) : amélioration de dépôt
+  « GoA4 » (moins de personnel, intervalle et arrêts plus courts, service de nuit). Peu visible →
+  amélioration transversale (y compris train-poubelle automatique).
+- **Porte de ville** : un même ensemble gare + Local Hub + parking-relais en lisière, vélo-cargo et
+  capsules en aval — les camions s'arrêtent au Hub, les voitures au parking-relais.
+
+**Déchets (suite)**
+- **Collecte pneumatique** (Envac, Wembley -90 % de bennes) : un terminal absorbe les déchets d'un
+  rayon sans véhicule, puis train.
+- **Bateau-poubelle / barge-entrepôt + vélo-cargo** (Amsterdam, Fludis sur la Seine).
+
+**Énergie et chaleur**
+- **Coopérative solaire / éolienne citoyenne** (Middelgrunden).
+- **Chauffage par eaux usées ou incinérateur** (False Creek, Spittelau) — chauffage non simulé en vanilla.
+- Startups climat et logistique : recherche en cours.
 
 **Voiture et espace public**
 - **Secteurs à la gantoise** : politique de district « filtre modal » + vraies restrictions de voies
@@ -149,9 +170,16 @@ Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées*
 - **Canicule fondatrice** : événement qui frappe les districts minéraux (Ministry for the Future).
 - **Eaux pluviales** : réveiller `SoilWaterSystem` (inondation par la pluie, code mort) ; rue-éponge,
   places-bassins (Copenhague), **rue-ruisseau** (Ecotopia).
+- **Leviers chaleur** : cool roofs (politique de district, -1,2 à -2 °C généralisés), micro-forêts
+  Miyawaki (≈ -6 °C local), ombrières.
 - **Friche qui dépollue** (Nausicaä) ; **eau comme plafond de croissance** (Pacific Edge).
 
-**Lecture et pédagogie**
+**Lecture et pédagogie** (`references/projets-dans-la-veine.md`)
+- **Panneau « Ville solarpunk »** : part modale, camions et bennes évités, CO₂ transport évité,
+  verdure — fil rouge de toutes les démos (la part modale et le CO₂ n'existent pas en vanilla).
+- **Scénario « transformer une ville existante »** : sauvegarde voiture-centrée, objectifs chiffrés,
+  paliers qui débloquent (`TransportRequirementData`) ; format défi en série (YouTube) et atelier
+  participatif (Block by Block).
 - **Panneau donut** par district : plancher social (proximité des 6 fonctions, bonheur) / plafond
   écologique (pollution, part voiture).
 - **Chirper** : « le saumon est revenu dans la rivière » ; incinérateur à la Hundertwasser.
