@@ -176,7 +176,7 @@ Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées*
 - **Assemblée de quartier** : piétonniser un district = creux de bonheur pendant le chantier, puis
   hausse, commerces +30 % (Poblenou).
 - **Rues aux écoles / cours Oasis**.
-- **Transformer la rue, pas seulement le district** (inspiration [Streetmix](https://streetmix.net/-/3411006),
+- **Transformer la rue, pas seulement le district** (inspiration [Streetmix](https://streetmix.net), outil de profils de rue
   aimé par l'humain) : profils de rue solarpunk (voie voiture → piste cyclable, arbres, voie
   bus/tram, bacs plantés) via **Road Builder (87190)** en dépendance ; requalifier une rue existante
   en place, avec l'avant/après comme moment pédagogique.
