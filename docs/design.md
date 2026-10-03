@@ -133,7 +133,7 @@ Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées*
 - **Décharge-mine** : décharge pleine = gisement exporté par train (Walkaway).
 
 **Mobilité des personnes** (idées de l'humain — `references/mobilite-personnes.md`)
-- **Voitures partagées bimodes rail-route** : roulent en ville, montent sur les rails, passent en
+- **Voitures partagées bimodes rail-route** (« on verra », idée gardée sans priorité) : roulent en ville, montent sur les rails, passent en
   automatique et s'intercalent entre les trains (RUF, PRT). Vrai bimode très dur en CS2 (aucun
   véhicule ne change de réseau) → POC : **navette-capsule automatique** (véhicule métro/tram cloné,
   4-10 places, intervalle très court) depuis un **parking-relais** en lisière (Heathrow ULTra).
@@ -176,6 +176,10 @@ Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées*
 - **Assemblée de quartier** : piétonniser un district = creux de bonheur pendant le chantier, puis
   hausse, commerces +30 % (Poblenou).
 - **Rues aux écoles / cours Oasis**.
+- **Transformer la rue, pas seulement le district** (inspiration [Streetmix](https://streetmix.net/-/3411006),
+  aimé par l'humain) : profils de rue solarpunk (voie voiture → piste cyclable, arbres, voie
+  bus/tram, bacs plantés) via **Road Builder (87190)** en dépendance ; requalifier une rue existante
+  en place, avec l'avant/après comme moment pédagogique.
 
 **Climat**
 - **Carte de chaleur** (`CellMapSystem<T>`) : bitume et voiture la montent, canopée et eau la
@@ -190,7 +194,7 @@ Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées*
 **Lecture et pédagogie** (`references/projets-dans-la-veine.md`)
 - **Panneau « Ville solarpunk »** : part modale, camions et bennes évités, CO₂ transport évité,
   verdure — fil rouge de toutes les démos (la part modale et le CO₂ n'existent pas en vanilla).
-- **Scénario « transformer une ville existante »** : sauvegarde voiture-centrée, objectifs chiffrés,
+- **Scénario « transformer une ville existante »** (voulu par l'humain dès son projet de jeu) : sauvegarde voiture-centrée, objectifs chiffrés,
   paliers qui débloquent (`TransportRequirementData`) ; format défi en série (YouTube) et atelier
   participatif (Block by Block).
 - **Panneau donut** par district : plancher social (proximité des 6 fonctions, bonheur) / plafond
