@@ -40,7 +40,7 @@ nostalgie anti-ville. Sources : `references/fiction-et-pensee-urbaine.md`.
 
 | # | Module | État | Faisabilité |
 |---|---|---|---|
-| 1 | **Déchets par rail** (train-poubelle) | Prochain | Bien supporté par le moteur, surtout de l'authoring de prefab — voir `references/dechets-par-rail-code-du-jeu.md`. ⚠️ Tigons Rail Infrastructure (133250) a des « Train Garbage Yards » d'export : à tester en jeu avant le plan |
+| 1 | **Déchets par rail** (train-poubelle) | Prochain | Bien supporté par le moteur, surtout de l'authoring de prefab — voir `references/dechets-par-rail-code-du-jeu.md`. ✅ Testé le 03/10/2026 : les « Train Garbage Yards » de Tigons Rail Infrastructure (133250) font déjà circuler des trains de déchets entre gares de la ville. Mais l'humain refuse 133250 en dépendance (trop d'entrées, voies non électrifiées) → recentrer |
 | 2 | **Cargo tram / métro de marchandises** | Idée | Deux cases vides d'une matrice que le jeu remplit déjà 3 fois (Cargo Train/Ship/Airplane). Piste : pas de nouvel enum, `TransportType.Tram` + ligne/arrêt/véhicule clonés en mode cargo — voir `references/bonnes-pratiques-modding.md` |
 | 3 | **Local Hub** (point de service + rail) | Idée | Brique existante : ICS (146817) transfère des ressources sans camion ni gare. Hook possible : intercepter avant dispatch, comme Industrial Freight Optimizer |
 | 4 | **Usine branchée au rail** | Idée | Asset + composant gare de fret. Change Internal Roads (147332) prouve que les voies ferrées internes existent |
