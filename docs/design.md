@@ -18,15 +18,16 @@ dépendance au lieu de le refaire.
 
 | # | Module | État | Faisabilité |
 |---|---|---|---|
-| 1 | **Déchets par rail** (train-poubelle) | Prochain | Bien supporté par le moteur, surtout de l'authoring de prefab — voir `references/dechets-par-rail-code-du-jeu.md` |
-| 2 | **Cargo tram / métro de marchandises** | Idée | Deux cases vides d'une matrice que le jeu remplit déjà 3 fois (Cargo Train/Ship/Airplane). Inconnue : enum `TransportType` extensible ? |
+| 1 | **Déchets par rail** (train-poubelle) | Prochain | Bien supporté par le moteur, surtout de l'authoring de prefab — voir `references/dechets-par-rail-code-du-jeu.md`. ⚠️ Tigons Rail Infrastructure (133250) a des « Train Garbage Yards » d'export : à tester en jeu avant le plan |
+| 2 | **Cargo tram / métro de marchandises** | Idée | Deux cases vides d'une matrice que le jeu remplit déjà 3 fois (Cargo Train/Ship/Airplane). Piste : pas de nouvel enum, `TransportType.Tram` + ligne/arrêt/véhicule clonés en mode cargo — voir `references/bonnes-pratiques-modding.md` |
 | 3 | **Local Hub** (point de service + rail) | Idée | Brique existante : ICS (146817) transfère des ressources sans camion ni gare. Hook possible : intercepter avant dispatch, comme Industrial Freight Optimizer |
 | 4 | **Usine branchée au rail** | Idée | Asset + composant gare de fret. Change Internal Roads (147332) prouve que les voies ferrées internes existent |
 | 5 | **Vélo-cargo** | Idée | Aucun précédent. Version « fausse » (prefab vélo sur rue interdite aux voitures) facile et visuellement suffisante |
 | 6 | **Climat urbain** (chaleur, eaux pluviales, renaturation simulée) | Lointain | Rien n'existe. Gros chantier |
 
-Vérifié en sept. 2026 : **aucun mod de cargo tram, cargo subway ou vélo-cargo** sur Paradox Mods
-(balayage des 1254 code mods + assets).
+Vérifié le 03/10/2026 : **aucun mod de cargo tram, métro de marchandises, vélo-cargo, climat urbain
+ni zone sans voiture par district** — détail dans `references/mods-existants.md`. Précédents
+réels, chiffres et échecs à ne pas reproduire : `references/monde-reel.md`.
 
 ## Ce qui est déjà dans le jeu (vanilla)
 
@@ -52,26 +53,30 @@ dans la description.
 | Realistic Parking | 87313 | Pas de place = trajet voiture impossible. **Le levier le plus fort** |
 | Road Rules — Lane & Vehicle Restrictions | 155436 | Interdit `PrivateCars`/`Trucks` par voie (presets `TruckBan`, `TransitOnly`, `LocalAccessOnly`), écrit dans le pathfinding natif. [C# ouvert](https://github.com/willmakesrandomshit/RoadRules) |
 | Extra Networks and Areas | 77175 | Routes invisibles → rues piétonnes où les bâtiments poussent |
-| Pathfinding Customizer | 86462 | Coût par action : monter « conduire », baisser « marcher/vélo/transit » |
+| Parking Control | 155806 | Interdit le stationnement sur voirie par district ou route (GPL-3.0) |
+| Realistic PathFinding | 121226 | Coûts de pathfinding (ruzbeh0) ; remplace Pathfinding Customizer 86462, figé en 1.3 |
 | Realistic Trips | 77171 | Comportement de déplacement (ruzbeh0) |
 | Dummy Traffic Remover | 107683 | Retire le faux trafic décoratif |
-| ULEZ - Ultra Low Emission Zone | 138746 | Péage par district |
+| ULEZ - Ultra Low Emission Zone | 138746 | Péage par district (⚠️ pas déclaré 1.6) |
 | Traffic | 80095 | Successeur TM:PE (krzychu124) |
 | Road Builder | 87190 | Routes sur mesure : piéton + tram + piste cyclable |
 
-Fuites connues : visiteurs et touristes en voiture (Tourism Overhaul 153543, MagicTaxi 78966) ;
-véhicules de service incompressibles (normal).
+Fuites connues : visiteurs et touristes en voiture (Tourism Overhaul 153543 les fait arriver par
+avion/ferry, à vérifier) ; véhicules de service incompressibles (normal). Weather Aware Citizens
+(161229) annule les trajets à pied et à vélo par mauvais temps : effet anti-vélo.
 
 ### Fret ferroviaire
 
-Multi-access Cargo Train Terminal (141917) · CargoTrainTerminal Raw Resources (138341) · One Way
-Cargo Terminal (126997) · Tigon's Rail Infrastructure (90794) · Dedicated Cargo Facilities ·
-Industrial Freight Optimizer (141755, ⚠️ ciblé 1.5.10f1, probablement cassé en 1.6).
+Tigons Rail Infrastructure (133250, remplace 90794 déprécié) · Dedicated Cargo Facilities (156605,
+alpha) · CargoTrainTerminal01 (151136) · All Transit + Trucks (138390) · Local Logistics (150547,
+MIT — modèle du Local Hub). Pas déclarés 1.6 : Multi-access Cargo Train Terminal (141917),
+CargoTrainTerminal Raw Resources (138341), One Way Cargo Terminal (126997), Industrial Freight
+Optimizer (141755, probablement cassé).
 
 ### Végétalisation
 
 Tree Controller (75993) · Natural Regrowth (151943) · **Árvore Absorption System (150254)** — les
-arbres nettoient air et bruit · Parkify (155651) · AreaBucket (81157) · Vibrant Foliage Pack
+arbres nettoient air et bruit (concurrent : Trees Defend Air, Noise Pollution 155838, un seul des deux) · Parkify (155651) · AreaBucket (81157) · Vibrant Foliage Pack
 (94265) · Water Features (75613)
 
 ### Outillage joueur
