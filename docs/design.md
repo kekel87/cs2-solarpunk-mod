@@ -154,7 +154,20 @@ Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées*
 **Énergie et chaleur**
 - **Coopérative solaire / éolienne citoyenne** (Middelgrunden).
 - **Chauffage par eaux usées ou incinérateur** (False Creek, Spittelau) — chauffage non simulé en vanilla.
-- Startups climat et logistique : recherche en cours.
+- **Politique « Ombrières obligatoires »** (loi APER française) ; **batterie de sable** (absorbe le
+  surplus solaire, Polar Night).
+- **Réacteur de fusion de démonstration** : tardif, cher, capricieux — morale « la ville a été
+  décarbonée avant la fusion ».
+- **Monument ARES** (stockage par wagons sur pente) avec infobulle honnête.
+
+**Innovations qui marchent** (`references/innovations-climat-logistique.md`)
+- **Cargo à voile** (Neoline, TOWT, Grain de Sail — en service) : Cargo Ship cloné, pollution nulle.
+- **Navettes de fret autonomes à batterie** (Parallel Systems) : habillage du cargo tram.
+- **Micro-hub conteneur + quadricycle** (Fernhay).
+- **Démolir l'autoroute, rouvrir la rivière** (Cheonggyecheon) : événement.
+- **Dirigeable cargo** (Flying Whales, promesse ≈ 2029) : spectacle, niche.
+- **Chirper anti-hype** : tube à colis, route solaire, camion hydrogène, captage du CO₂, tours à
+  gravité, fusion « l'an prochain ».
 
 **Voiture et espace public**
 - **Secteurs à la gantoise** : politique de district « filtre modal » + vraies restrictions de voies
