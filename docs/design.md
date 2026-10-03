@@ -134,6 +134,7 @@ Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées*
   Train Garbage Yards de Tigon (133250, qui ne fait que l'export). Technique : cloner le prefab
   vanilla et lui ajouter un composant `CargoTransportStation` (`m_TradedResources = [Garbage]`) avec
   sa voie. Même technique que l'**usine embranchée**.
+- **Versions souterraines** (idée de l'humain) : centre de collecte urbain avec gare souterraine — la gare disparaît de la rue, rejoint le métro de marchandises.
 - **Tram-collecte de quartier** (Cargo-Tram Zurich).
 - **Décharge-mine** : décharge pleine = gisement exporté par train (Walkaway).
 
