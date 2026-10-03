@@ -1,0 +1,21 @@
+# .NET build output
+bin/
+obj/
+*.user
+
+# Unity / toolchain generated
+Library/
+Temp/
+Logs/
+
+# UI (if the mod gets one)
+node_modules/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Claude Code local state
+.claude/.state/
+.claude/settings.local.json

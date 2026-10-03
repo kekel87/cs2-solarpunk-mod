@@ -1,0 +1,424 @@
+/**
+ * Interroge le graphe de memoire depuis la ligne de commande.
+ *
+ * Usage : SP_MEMORY_HOME=<dir> SP_MEMORY_VENDOR=<dir> node query.mjs "ma question"
+ *         ... --open <nom-entite>   pour lire une entite en entier
+ */
+import { planifierOubli } from "./forget-guards.mjs";
+import { plier } from "./fts.mjs";
+import { fusionner, planifierFusion } from "./fusion.mjs";
+import { planifierInvalidation } from "./invalidation.mjs";
+import { ouvrirStore } from "./paths.mjs";
+import { verifierVerbe } from "./relations.mjs";
+
+const argvReel = process.argv.slice(2);
+const store = await ouvrirStore();
+
+const args = argvReel;
+
+if (!args.length || args[0] === "--help" || args[0] === "-h") {
+  console.log(`Interroge le graphe de mémoire du projet.
+
+  query.mjs "mots clés"        recherche classée (index compact)
+
+  Aucune variable d'environnement requise : le chemin se déduit de CLAUDE_CONFIG_DIR.
+  Surcharges : SP_MEMORY_HOME (racine du graphe), SP_MEMORY_VENDOR (paquet @pepk).
+
+  query.mjs --open <nom> ...   observations COMPLÈTES d'une ou plusieurs entités
+  query.mjs --stats            taille et composition du graphe
+  query.mjs --add <type> <nom> <observation> [obs...]     crée ou complète une entité
+  query.mjs --link <de> <relation> <vers>                 relie deux entités ; le verbe
+      appartient au vocabulaire FERMÉ de relations.mjs (refus sinon, liste en retour)
+  query.mjs --resolve <nom> <observation> [obs...]        SOLDE une entité : consigne
+      la ou les observations de clôture ET bascule son type (backlog → backlog-résolu,
+      question-ouverte → question-résolue). Un seul geste : c'est de la séparation des
+      deux que venait la dérive — voir --retype.
+  query.mjs --retype <nom> <type>                         change le type d'une entité
+      (bascule brute, sans rien consigner ; préférez --resolve pour solder)
+  query.mjs --forget <nom> <fragment>                     RETIRE une observation
+      (la seule qui contienne <fragment> ; refuse s'il y en a plusieurs, et
+      RÉIMPRIME en entier ce qu'elle retire — c'est le seul geste destructeur)
+  query.mjs --forget-all <nom> <fragment>                 retire TOUTES celles qui
+      contiennent <fragment>, chacune réimprimée
+  query.mjs --merge <cible> <source> [source...]          FUSIONNE des entités de même
+      type dans la cible (créée si elle n'existe pas : recoller x-p1, x-p2 sous « x ») :
+      observations (quasi-doublons écartés), relations entrantes et sortantes recâblées,
+      récence la plus haute gardée, sources supprimées. Une transaction.
+  query.mjs --invalidate <nom> <fragment> <raison>        marque UNE observation fausse
+      ou périmée (« INVALID AAAA-MM-JJ: raison — texte »). Le texte reste lisible par
+      --open ; la recherche et le hook de rappel ne le servent plus. Préférez-le à
+      --forget : corriger un fait = l'invalider PUIS --add le nouveau.
+
+Conseils mesurés le 2026-09-06 :
+  · préférez 2-4 mots-clés DISTINCTIFS à une phrase — une requête longue se noie
+    dans les mots communs ("roue" trouve du premier coup, pas "roue de caractères
+    du salon en ligne quelle décision contredite") ;
+  · le mode recherche TRONQUE les observations : dès qu'une entrée compte, relisez-la
+    avec --open, sinon vous perdez la fin ;
+  · en cas d'homonyme (« Lot B3 » multijoueur vs « batch B3 » du roster), ajoutez un
+    mot du domaine.`);
+  process.exit(0);
+}
+
+if (args[0] === "--add") {
+  // Chemin d'ECRITURE. Sans lui le graphe serait en lecture seule, et supprimer
+  // les fichiers-memoire laisserait la memoire neuve sans nulle part ou aller.
+  // Les outils MCP font la meme chose, mais seulement apres un redemarrage :
+  // ce client marche tout de suite, et depuis un script.
+  const [type, nom, ...obs] = args.slice(1);
+  if (!type || !nom || !obs.length) {
+    console.error("usage : --add <type> <nom> <observation> [observation...]");
+    process.exit(1);
+  }
+  const cree = store.createEntities([{ name: nom, entityType: type, observations: obs }]);
+  if (cree.length) {
+    console.log(`entité créée : ${nom} [${type}]`);
+  } else {
+    const r = store.addObservations([{ entityName: nom, contents: obs }]);
+    const saut = r[0]?.skippedAsNearDuplicate?.length ?? 0;
+    console.log(
+      `entité existante complétée : ${nom}${saut ? ` (${saut} quasi-doublon(s) écarté(s))` : ""}`,
+    );
+  }
+  process.exit(0);
+}
+
+/**
+ * Type d'arrivée quand on solde une entité. Sans cette table, la bascule se faisait
+ * en SQL écrit à la main, hors de l'outil — et elle ne se faisait donc pas : les
+ * entités soldées recevaient bien leur observation « RÉSOLU le … » (un AJOUT, le
+ * seul geste que --add sache faire) mais gardaient leur type. Vingt-quatre entrées
+ * de backlog étaient dans cet état le 2026-09-14.
+ */
+const TYPE_SOLDE = new Map([
+  ["backlog", "backlog-résolu"],
+  ["question-ouverte", "question-résolue"],
+]);
+
+/** Bascule le type ET la ligne `kind='type'` de l'index FTS, que le trigger tient à jour. */
+function retyper(nom, type) {
+  const avant = store.db.prepare("SELECT entity_type t FROM entities WHERE name = ?").get(nom);
+  if (!avant) {
+    console.error(`entité introuvable : ${nom}`);
+    process.exit(1);
+  }
+  if (avant.t === type) {
+    return { inchange: true, avant: avant.t };
+  }
+  store.db.prepare("UPDATE entities SET entity_type = ? WHERE name = ?").run(type, nom);
+  return { inchange: false, avant: avant.t };
+}
+
+/** Les observations d'une entité, ou `null` si elle n'existe pas — le contrat des gardes. */
+function lireObservations(nom) {
+  if (nom === undefined || !store.db.prepare("SELECT 1 FROM entities WHERE name = ?").get(nom)) {
+    return null;
+  }
+  return store.db
+    .prepare("SELECT content FROM observations WHERE entity_name = ?")
+    .all(nom)
+    .map((row) => row.content);
+}
+
+if (args[0] === "--retype") {
+  const [nom, type] = args.slice(1);
+  if (!nom || !type) {
+    console.error("usage : --retype <nom> <type>");
+    process.exit(1);
+  }
+  const r = retyper(nom, type);
+  console.log(r.inchange ? `déjà de ce type : ${nom} [${type}]` : `${nom} : ${r.avant} → ${type}`);
+  process.exit(0);
+}
+
+if (args[0] === "--resolve") {
+  // Solder = consigner POURQUOI c'est clos, puis basculer le type. Les deux ensemble,
+  // parce que séparés l'un se fait et l'autre s'oublie.
+  const [nom, ...obs] = args.slice(1);
+  if (!nom || !obs.length) {
+    console.error(
+      "usage : --resolve <nom> <observation> [observation...]\n" +
+        "  l'observation dit ce qui l'a soldée (plan, décision, commit) — elle n'est pas optionnelle.",
+    );
+    process.exit(1);
+  }
+  const actuel = store.db.prepare("SELECT entity_type t FROM entities WHERE name = ?").get(nom);
+  if (!actuel) {
+    console.error(`entité introuvable : ${nom}`);
+    process.exit(1);
+  }
+  const cible = TYPE_SOLDE.get(actuel.t);
+  if (!cible) {
+    // Distinguer « déjà soldée » de « type inconnu » : sur un rejeu après incident,
+    // annoncer un type inconnu et pointer vers --retype enverrait retyper une entité
+    // qui n'a besoin de rien.
+    const dejaSolde = [...TYPE_SOLDE.values()].includes(actuel.t);
+    console.error(
+      dejaSolde
+        ? `${nom} est déjà soldée [${actuel.t}] — rien à faire.`
+        : `type « ${actuel.t} » sans forme soldée connue (attendu : ${[...TYPE_SOLDE.keys()].join(", ")}).\n` +
+            "  Pour une bascule délibérée vers un autre type : --retype.",
+    );
+    process.exit(1);
+  }
+  // UNE SEULE transaction. Séparés, l'ajout pouvait passer et la bascule échouer
+  // (busy_timeout de 5 s, et le hook de sauvegarde fait un wal_checkpoint sur Stop) :
+  // on obtenait une entité portant « RÉSOLU » et toujours typée backlog, c'est-à-dire
+  // le défaut même que cette commande existe pour empêcher.
+  let ajoutees = 0;
+  let saut = 0;
+  store.db.transaction(() => {
+    const r = store.addObservations([{ entityName: nom, contents: obs }]);
+    // Le store REND ce qu'il a ajouté : le lire, plutôt que de le recalculer par
+    // soustraction — la mesure existe, la reconstitution pourrait diverger d'elle.
+    ajoutees = r[0]?.addedObservations?.length ?? 0;
+    saut = r[0]?.skippedAsNearDuplicate?.length ?? 0;
+    store.db.prepare("UPDATE entities SET entity_type = ? WHERE name = ?").run(cible, nom);
+  })();
+  console.log(
+    `soldé : ${nom} — ${actuel.t} → ${cible}` +
+      ` (+${ajoutees} observation(s)${saut ? `, ${saut} quasi-doublon(s) écarté(s)` : ""})`,
+  );
+  process.exit(0);
+}
+
+if (args[0] === "--link") {
+  const [de, relation, vers] = args.slice(1);
+  if (!de || !relation || !vers) {
+    console.error("usage : --link <de> <relation> <vers>");
+    process.exit(1);
+  }
+  const verbe = verifierVerbe(relation);
+  if (!verbe.ok) {
+    console.error(verbe.message);
+    process.exit(1);
+  }
+  const c = store.createRelations([{ from: de, to: vers, relationType: relation }]);
+  console.log(
+    c.length ? `relation créée : (${de}) --${relation}--> (${vers})` : "relation déjà présente",
+  );
+  process.exit(0);
+}
+
+if (args[0] === "--forget" || args[0] === "--forget-all") {
+  // Le graphe était en AJOUT SEUL : --add complète, rien ne retire. Conséquence
+  // mesurée, agenda-prochaine-etape-courante accumulait ses versions successives au
+  // lieu de les remplacer, et le tri plaçait la PÉRIMÉE avant la bonne — la panne
+  // exacte que ce pointeur au nom stable existait pour éviter.
+  //
+  // 🔴 Les GARDES ne sont plus ici : elles vivent dans ./forget-guards.mjs, pures et
+  // couvertes par query.test.ts (decision-1039). Ce bloc ne fait plus que lire la
+  // base, obéir au verdict, et imprimer. Motif : tant qu'elles étaient en ligne dans
+  // ce script top-level à process.exit, elles étaient intestables — et c'est là que
+  // les deux Critical de la revue du 2026-09-14 s'étaient logés.
+  const tout = args[0] === "--forget-all";
+  const bruts = args.slice(1);
+
+  const observations = lireObservations(bruts[0]);
+
+  const verdict = planifierOubli({ tout, arguments: bruts, observations });
+  if (!verdict.ok) {
+    console.error(verdict.message);
+    process.exit(1);
+  }
+
+  // Réimprimer EN ENTIER avant de retirer. Le graphe lui-même ne garde aucun
+  // historique — mais la BASE est versionnée par le hook memory-git-sync.sh dans un
+  // dépôt privé, donc le geste est rattrapable à la granularité de la sauvegarde.
+  // On imprime la commande de rattrapage ici, au moment où elle sert.
+  console.log(`retiré de ${verdict.nom} :`);
+  for (const o of verdict.touchees) {
+    console.log(`  --- ${o}`);
+  }
+  store.deleteObservations([{ entityName: verdict.nom, observations: verdict.touchees }]);
+  const restantes = store.db
+    .prepare("SELECT COUNT(*) c FROM observations WHERE entity_name = ?")
+    .get(verdict.nom).c;
+  console.log(`${verdict.touchees.length} observation(s) retirée(s) — il en reste ${restantes}.`);
+  console.log(
+    "  rattrapage si c'était une erreur (la base est versionnée par memory-git-sync.sh) :\n" +
+      '    git -C "$CLAUDE_CONFIG_DIR/memory/sync" log --oneline -- memory.db\n' +
+      '    git -C "$CLAUDE_CONFIG_DIR/memory/sync" show <commit>:memory.db > /tmp/avant.db',
+  );
+  process.exit(0);
+}
+
+if (args[0] === "--invalidate") {
+  const bruts = args.slice(1);
+  const observations = lireObservations(bruts[0]);
+  const date = new Date().toLocaleDateString("sv-SE"); // AAAA-MM-JJ, heure locale
+  const verdict = planifierInvalidation({ arguments: bruts, observations, date });
+  if (!verdict.ok) {
+    console.error(verdict.message);
+    process.exit(1);
+  }
+  // Réécriture EN PLACE : le trigger memory_fts_au_obs réindexe le nouveau texte.
+  store.db
+    .prepare("UPDATE observations SET content = ? WHERE entity_name = ? AND content = ?")
+    .run(verdict.apres, verdict.nom, verdict.avant);
+  console.log(`invalidée dans ${verdict.nom} :\n  +++ ${verdict.apres}`);
+  process.exit(0);
+}
+
+if (args[0] === "--merge") {
+  const noms = args.slice(1);
+  const types = new Map(
+    store.getEntitiesByNames(noms).map((entite) => [entite.name, entite.entityType]),
+  );
+  const verdict = planifierFusion({ arguments: noms, types });
+  if (!verdict.ok) {
+    console.error(verdict.message);
+    process.exit(1);
+  }
+  const bilan = fusionner(store.db, verdict);
+  console.log(
+    `fusionné dans ${verdict.cible}${verdict.creer ? " (créée)" : ""} : ${verdict.sources.length} source(s), ` +
+      `+${bilan.observations} observation(s) (${bilan.ecartees} quasi-doublon(s) écarté(s)), ` +
+      `${bilan.relations} relation(s) recâblée(s).`,
+  );
+  process.exit(0);
+}
+
+if (args[0] === "--stats") {
+  const q = (sql) => store.db.prepare(sql).get();
+  const e = q("SELECT COUNT(*) c FROM entities").c;
+  const o = q("SELECT COUNT(*) c FROM observations").c;
+  const r = q("SELECT COUNT(*) c FROM relations").c;
+  console.log(`${e} entités, ${o} observations, ${r} relations`);
+  for (const row of store.db
+    .prepare("SELECT entity_type t, COUNT(*) c FROM entities GROUP BY t ORDER BY c DESC")
+    .all()) {
+    console.log(`  ${String(row.c).padStart(5)}  ${row.t}`);
+  }
+  process.exit(0);
+}
+const iOpen = args.indexOf("--open");
+if (iOpen >= 0) {
+  const noms = args.slice(iOpen + 1);
+  if (!noms.length) {
+    console.error("usage : --open <nom-entité> [autre-nom...]  (voir --help)");
+    process.exit(1);
+  }
+  const r = store.openNodes(noms);
+  for (const e of r.entities) {
+    console.log(`\n### ${e.name}  [${e.entityType}]`);
+    for (const o of e.observations) {
+      console.log(`  - ${o}`);
+    }
+  }
+  // openNodes ne rend que les relations INTERNES au lot demandé : ouvrir une seule
+  // entité n'en montrait donc aucune, ce qui masque toute la grappe.
+  const liens = store.db
+    .prepare(
+      "SELECT from_entity f, relation_type t, to_entity v FROM relations " +
+        `WHERE from_entity IN (${noms.map(() => "?").join(",")}) ` +
+        `OR to_entity IN (${noms.map(() => "?").join(",")})`,
+    )
+    .all(...noms, ...noms);
+  if (liens.length) {
+    console.log("\n--- relations ---");
+    for (const l of liens) {
+      console.log(`  (${l.f}) --${l.t}--> (${l.v})`);
+    }
+  }
+} else {
+  const requete = args.join(" ");
+  const r = store.searchNodes(requete);
+
+  // Quels termes de la question chaque résultat touche-t-il vraiment ? Sans ça, une
+  // entité qui ne matche que des mots communs a l'air aussi solide qu'une autre —
+  // et sur une requête sans bonne réponse, le moteur rend 10 entités arbitraires
+  // qu'on lit au lieu de reformuler (constaté à la mesure du 2026-09-06).
+  // Même contrat que le moteur : un mot-outil français est RARE dans ce graphe
+  // (« comment », « truc »…), donc la rareté seule le prendrait pour un terme
+  // distinctif. La liste d'arrêt est ce qui l'empêche — le filtre statistique ne
+  // la remplace pas.
+  const CREUX = new Set(
+    (
+      "alors avec bien bon car ce cela ces cette chose comme comment dans " +
+      "des donc elle est eux fait faire faut ici il ils je la le les leur lui mais marche moi " +
+      "nous ont ou par pas peut plus pour pourquoi quand que quel quelle qui quoi sans ses son " +
+      "sont sur tout trop truc une vous"
+    ).split(" "),
+  );
+  const mots = [...new Set(plier(requete).match(/[a-z0-9_-]+/g) ?? [])].filter(
+    (m) => m.length > 2 && !CREUX.has(m),
+  );
+  const total = store.db.prepare("SELECT COUNT(*) c FROM entities").get().c || 1;
+  const rarete = new Map();
+  for (const m of mots) {
+    try {
+      rarete.set(
+        m,
+        store.db
+          .prepare(
+            "SELECT COUNT(DISTINCT entity_name) c FROM memory_fts " + "WHERE memory_fts MATCH ?",
+          )
+          .get(`"${m}"`).c / total,
+      );
+    } catch {
+      rarete.set(m, 1);
+    }
+  }
+  const touches = (nom) =>
+    mots.filter((m) => {
+      try {
+        return store.db
+          .prepare(
+            "SELECT 1 FROM memory_fts WHERE memory_fts MATCH ? " + "AND entity_name = ? LIMIT 1",
+          )
+          .get(`"${m}"`, nom);
+      } catch {
+        return false;
+      }
+    });
+
+  if (!r.entities.length) {
+    console.log(
+      "aucun résultat — réessayez avec 2-3 mots-clés plus distinctifs " + "(voir --help)",
+    );
+  }
+  let solides = 0;
+  for (const e of r.entities) {
+    const t = touches(e.name);
+    // « distinctif » = présent dans moins de 4 % des entités. Un résultat qui n'en
+    // touche aucun est du bruit, quelle que soit sa place au classement.
+    const forts = t.filter((m) => (rarete.get(m) ?? 1) <= 0.04);
+    if (forts.length) {
+      solides++;
+    }
+    const marque = forts.length
+      ? `✔ ${forts.join(", ")}`
+      : `≈ faible (seulement : ${t.join(", ") || "rien"})`;
+    console.log(`\n### ${e.name}  [${e.entityType}]  — ${marque}`);
+    let coupe = false;
+    for (const o of e.observations) {
+      // Couper au milieu d'une phrase rend l'extrait illisible et fait perdre la
+      // fin sans le signaler. On coupe sur une frontière de phrase et on le DIT.
+      if (o.length > 600) {
+        const p = o.lastIndexOf(". ", 600);
+        console.log(`  - ${o.slice(0, p > 200 ? p + 1 : 600)} […]`);
+        coupe = true;
+      } else {
+        console.log(`  - ${o}`);
+      }
+    }
+    if (coupe) {
+      console.log(`  ⚠️  tronqué — relire en entier : --open ${e.name}`);
+    }
+  }
+  if (r.entities.length && !solides) {
+    console.log(
+      "\n⚠️  Aucun résultat ne touche un terme distinctif de la question : " +
+        "c'est probablement du bruit. Reformulez avec 2-3 mots-clés plus spécifiques " +
+        "(nom de fichier, identifiant, numéro de décision), ou un synonyme.",
+    );
+  }
+  if (r.relations.length) {
+    console.log("\n--- relations ---");
+    for (const rel of r.relations) {
+      console.log(`  (${rel.from}) --${rel.relationType}--> (${rel.to})`);
+    }
+  }
+}
+process.exit(0);

@@ -1,0 +1,101 @@
+#!/usr/bin/env python3
+"""Stop : rappelle les deux arrêts du workflow quand du travail reste non validé.
+
+Pourquoi ce hook existe : la règle de workflow de CLAUDE.md est obligatoire, mais
+de la prose s'érode ; ce qu'une machine applique tient. Un hook `Stop` est le seul
+moment où l'on peut encore agir : `SessionEnd` arrive quand le modèle est déjà parti.
+
+Trois gardes, parce qu'un hook qui râle à chaque tour est désactivé en une journée :
+  1. `stop_hook_active` — ne jamais bloquer une reprise déjà causée par un hook Stop,
+     sinon la session ne peut plus se terminer ;
+  2. un marqueur par session, écrit AVANT d'émettre : au plus un rappel, jamais deux ;
+  3. il faut de vraies modifications de code ou de configuration — une session de
+     discussion ou de lecture ne déclenche rien.
+
+Pire cas par construction : un tour perdu par session.
+"""
+import json
+import os
+import subprocess
+import sys
+
+ETAT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".state", "menu-rappel")
+# Ce qui compte comme « implémentation ». La doc seule n'est pas concernée : le menu
+# prévoit déjà un cas réduit pour ça.
+SURVEILLE = ("src/", "scripts/", ".claude/", "tests/")
+
+MESSAGE = (
+    "Du travail est modifié et n'a pas passé la chaîne de validation. La section "
+    "« Le workflow — DEUX arrêts » de CLAUDE.md est OBLIGATOIRE. Selon où on en est :\n"
+    "  · test humain en jeu PAS encore fait → ARRÊT 1 : résumé court, puis "
+    "AskUserQuestion avec UNE SEULE question, « Tu testes ? » (oui / non), avec le "
+    "nombre de scénarios à jouer — jamais de durée. Rien d'autre : ni build, ni "
+    "review, ni menu ;\n"
+    "  · test fait (ou refusé) → ARRÊT 2 : skill `/menu`, qui lance sans demander "
+    "commit WIP + `code-reviewer` ∥ `/code-review`, PUIS AskUserQuestion avec UNE "
+    "question multi-select : `doc-keeper` / `build + commit` (toujours coché).\n\n"
+    "Fichiers concernés :\n{fichiers}\n\n"
+    "Si l'humain a déjà tranché la suite dans cette conversation, dis-le-lui en une "
+    "ligne et termine — ce rappel ne se répétera pas dans cette session."
+)
+
+
+def modifies():
+    """Fichiers SUIVIS et modifiés dans les répertoires surveillés.
+
+    Deux pièges, tous deux constatés :
+    - les entrées `??` sont exclues. Sans ça le hook se déclenchait sur son PROPRE
+      marqueur (`.claude/.state/`), donc à chaque session, sur un dépôt propre —
+      exactement le « hook qui râle à vide » que ce fichier dit vouloir éviter ;
+    - un `git` qui échoue (pas un dépôt, `index.lock` tenu ailleurs, délai dépassé)
+      rend une sortie vide, qu'on prendrait pour « rien à signaler ». On distingue
+      donc l'échec du silence.
+    """
+    try:
+        r = subprocess.run(["git", "status", "--porcelain", "--untracked-files=no"],
+                           capture_output=True, text=True, timeout=10,
+                           cwd=os.environ.get("CLAUDE_PROJECT_DIR") or None)
+    except Exception:
+        return None
+    if r.returncode != 0:
+        return None
+    fichiers = []
+    for ligne in r.stdout.split("\n"):
+        chemin = ligne[3:].strip().strip('"')
+        if " -> " in chemin:          # renommage : « ancien -> nouveau »
+            chemin = chemin.split(" -> ", 1)[1]
+        if chemin and chemin.startswith(SURVEILLE):
+            fichiers.append(chemin)
+    return fichiers
+
+
+def main():
+    charge = json.load(sys.stdin)
+    if charge.get("stop_hook_active"):
+        return
+    sid = charge.get("session_id") or ""
+    if not sid:
+        return
+    fichiers = modifies()
+    if fichiers is None or not fichiers:
+        return          # git indisponible, ou rien de suivi n'a bougé
+
+    os.makedirs(ETAT, exist_ok=True)
+    marqueur = os.path.join(ETAT, sid)
+    if os.path.exists(marqueur):
+        return
+    # écrit AVANT d'émettre : si quoi que ce soit échoue ensuite, on ne boucle pas
+    open(marqueur, "w").write("1")
+
+    apercu = "\n".join(f"  - {f}" for f in fichiers[:8])
+    if len(fichiers) > 8:
+        apercu += f"\n  … et {len(fichiers) - 8} autres"
+    print(json.dumps({"decision": "block",
+                      "reason": MESSAGE.format(fichiers=apercu)}))
+
+
+try:
+    main()
+except Exception:
+    pass          # un hook de rappel ne doit jamais empêcher une session de finir
+sys.exit(0)
