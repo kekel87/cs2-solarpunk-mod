@@ -129,6 +129,11 @@ Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées*
 **Déchets**
 - **Gare de compactage + train-poubelle → incinérateur embranché qui chauffe la ville** (Staten
   Island, binliners, Spittelau). Mâchefer réexpédié par train.
+- **Installations de traitement embranchées** (demande de l'humain, 03/10/2026) : incinérateur,
+  centre de tri, décharge **directement reliés au rail** — l'autre bout de la ligne qui part des
+  Train Garbage Yards de Tigon (133250, qui ne fait que l'export). Technique : cloner le prefab
+  vanilla et lui ajouter un composant `CargoTransportStation` (`m_TradedResources = [Garbage]`) avec
+  sa voie. Même technique que l'**usine embranchée**.
 - **Tram-collecte de quartier** (Cargo-Tram Zurich).
 - **Décharge-mine** : décharge pleine = gisement exporté par train (Walkaway).
 
