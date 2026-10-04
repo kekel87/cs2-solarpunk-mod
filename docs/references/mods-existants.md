@@ -85,10 +85,12 @@ seul, playset « Solarpunk Mod »). Rôle pour nous :
 - **Compat à surveiller** : Traffic 80095 (pathfinding, voies), Zoning Toolkit, Zone Organizer
   (zonage, cf. jalon 5 bis), Extra UI Screens et Extended Tooltip (UI, notre bouton en
   `GameTopLeft`), Advanced Line Tool, Move It, Anarchy (placement).
-- **Inspiration / réutilisable** : Unified Icon Library (icônes partagées, requise par 6 mods —
-  piste pour l'icône de notre bouton), I18n Everywhere (traductions communautaires — nos textes
-  passent par la localisation du jeu, donc compatibles), ExtraLib / ExtraLandscapingTools
-  (bibliothèque commune de Triton Supreme), Construction Animation (Ti4goc, auteur de Grid Road
+- **Bibliothèques** (dépendances d'autres mods, rien en jeu) : Unified Icon Library (icônes
+  partagées — dépendance possible pour nos icônes, inutile tant qu'on prend celles du jeu), I18n
+  Everywhere (cadre de traduction communautaire — dépendance possible pour d'autres langues ; nos
+  textes en/fr sont pour l'instant intégrés), ExtraLib (interne aux mods « Extra » de Triton
+  Supreme — rien pour nous).
+- **Inspiration** : ExtraLandscapingTools, Construction Animation (Ti4goc, auteur de Grid Road
   Generator).
 - **Outillage** : Find It + Asset Icon Library.
 
