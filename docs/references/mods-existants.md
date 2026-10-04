@@ -74,6 +74,24 @@ organique ». Routes par code via `CreationDefinition` + `NetCourse` (modèle à
 tampons de réseaux. Road Builder 87190 : profils, pas tracés. **Manque** : génération par
 croissance (boucles, arborescence), gabarits paramétrés, préréglage « quartier sans voiture ».
 
+## Playset de jeu de l'humain (04/10/2026)
+
+Mods qu'il utilise : notre mod doit **cohabiter** avec eux (panneau testé seulement avec Tigon
+seul, playset « Solarpunk Mod »). Rôle pour nous :
+
+- **Dépendances / briques** : Tigons Rail Infrastructure 133250 (déchets par rail), Grid Road
+  Generator 151745 (quartiers), Road Builder 87190 (profils de rue), Road Rules 155436 (voies
+  interdites aux voitures/camions), Extra Networks and Areas 77175 (rues piétonnes).
+- **Compat à surveiller** : Traffic 80095 (pathfinding, voies), Zoning Toolkit, Zone Organizer
+  (zonage, cf. jalon 5 bis), Extra UI Screens et Extended Tooltip (UI, notre bouton en
+  `GameTopLeft`), Advanced Line Tool, Move It, Anarchy (placement).
+- **Inspiration / réutilisable** : Unified Icon Library (icônes partagées, requise par 6 mods —
+  piste pour l'icône de notre bouton), I18n Everywhere (traductions communautaires — nos textes
+  passent par la localisation du jeu, donc compatibles), ExtraLib / ExtraLandscapingTools
+  (bibliothèque commune de Triton Supreme), Construction Animation (Ti4goc, auteur de Grid Road
+  Generator).
+- **Outillage** : Find It + Asset Icon Library.
+
 ## Non déclarés 1.6 (à tester ou à éviter)
 
 Industrial Freight Optimizer 141755 · ULEZ 138746 · MagicTaxi 78966 · terminaux 141917, 138341,
