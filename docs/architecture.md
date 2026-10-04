@@ -22,7 +22,10 @@ src/SolarpunkMod/         le mod : SolarpunkMod.csproj, Mod.cs (IMod), Propertie
 
 ## Module UI
 
-`UI/` vient du template officiel (`.ModdingToolchain/npx-create-csii-ui-mod/template`). Seul écart
+`UI/` vient du template officiel (`.ModdingToolchain/npx-create-csii-ui-mod/template`). Les types `UI/types/*.d.ts`
+(API UI de Colossal Order, fournis par l'outil officiel pour être copiés) restent commités : pratique
+courante des mods publics, nécessaires au build ; à rafraîchir par `npm run update` après une mise à
+jour du jeu. Seul écart
 avec le stock : `webpack.config.js` sort via `path.join` (sinon, sous Linux, le bundle atterrit hors
 de `Mods/`) — à réappliquer après un `npm run update`. `dotnet build` construit l'UI (cible
 `BuildUI`, après `DeployWIP` qui vide le dossier du mod ; `npm ci` si `node_modules` manque).

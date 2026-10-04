@@ -246,9 +246,10 @@ Fil : **mesurer → retirer les camions → retirer les voitures → chaleur et 
 | 1 | ✅ **Panneau d'info** (fait, recetté le 04/10/2026) : part modale, voitures, camions de livraison, bennes, trains de marchandises, part d'électricité renouvelable — instantané ville, lecture seule | Des chiffres qui bougent |
 | 1 bis | **Politique « Toits solaires »** : petit gain, met en place la création de politiques de district (réutilisée au jalon 5) | Conso du district en baisse |
 | 2 | **Quartier sans camion** : rail attractif par données + Local Hub (`SaleFlags.Virtual`) | District livré sans camion |
-| 3 | **Déchets bout en bout** : incinérateur / centre de tri reliés au rail, à l'autre bout des yards de Tigon | Train-poubelle jusqu'au traitement |
+| 3 | **Déchets bout en bout** : incinérateur / centre de tri reliés au rail, à l'autre bout des yards de Tigon ; indicateur « déchets collectés par train » au panneau | Train-poubelle jusqu'au traitement |
 | 4 | **Cargo tram** : raccourci voies mixtes, puis version clonée | Trams de marchandises en voirie |
 | 5 | **Quartier sans voiture** : filtre modal par district + vélo-cargo | District piéton livré à vélo |
+| 5 bis | **Générateur de quartier sans voiture** : boucles piétonnes / cyclables autour d'un arrêt de tram, hiérarchie collectrice → desserte, tracé organique. D'abord tester Grid Road Generator (151745) en dépendance, coder seulement le manque | Un quartier sans voiture posé en quelques clics |
 | 6 | **Chaleur et énergie** : carte de chaleur, clim/chauffage par bâtiment, leviers passifs, réseau de chaleur depuis l'incinérateur | Îlots de chaleur, la canopée les réduit |
 | 7 | **Eaux pluviales** | Inondations, rues-éponges |
 | Final | **Scénario « transformer une ville existante »** : objectifs tirés du panneau, paliers | Partie guidée |

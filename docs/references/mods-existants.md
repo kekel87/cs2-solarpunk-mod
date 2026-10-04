@@ -64,6 +64,15 @@ Resource Locator 99048 (outil de recette).
 **Outillage joueur** : Skyve 75804 · Find It 77240 · Move It 74324 · Anarchy 74604 · 529 Tiles
 74328 · InfoLoom 91433.
 
+## Tracé de quartiers (vérifié le 04/10/2026)
+
+**Grid Road Generator 151745** (Ti4goc, GitHub actif, **sans licence**) : remplit un périmètre
+libre de rues, culs-de-sac, raquettes, jitter, collectrices courbes — ~80 % du « quartier
+organique ». Routes par code via `CreationDefinition` + `NetCourse` (modèle à lire). Mert's ToolBox
+(MIT) : grilles, îlots arrondis (géométrique). Copaste 154371 et ctrlC (MIT) : copier-coller /
+tampons de réseaux. Road Builder 87190 : profils, pas tracés. **Manque** : génération par
+croissance (boucles, arborescence), gabarits paramétrés, préréglage « quartier sans voiture ».
+
 ## Non déclarés 1.6 (à tester ou à éviter)
 
 Industrial Freight Optimizer 141755 · ULEZ 138746 · MagicTaxi 78966 · terminaux 141917, 138341,
