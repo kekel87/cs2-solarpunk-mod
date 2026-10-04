@@ -1,8 +1,10 @@
 ﻿using Colossal.Logging;
 using Game;
 using Game.Modding;
+using Game.Pathfind;
 using Game.SceneFlow;
 using SolarpunkMod.Info;
+using SolarpunkMod.Policies;
 
 namespace SolarpunkMod
 {
@@ -22,6 +24,12 @@ namespace SolarpunkMod
 
             CityInfoLocale.Register();
             updateSystem.UpdateAt<SolarpunkInfoUISystem>(SystemUpdatePhase.UIUpdate);
+
+            PolicyLocale.Register();
+            // No phase: it only registers the policy prefab on game preload.
+            updateSystem.World.GetOrCreateSystemManaged<EndResidentialParkingPolicySystem>();
+            updateSystem.UpdateAfter<StreetParkingClosureSystem, ParkingLaneDataSystem>(SystemUpdatePhase.ModificationEnd);
+            updateSystem.UpdateAt<ImpoundSystem>(SystemUpdatePhase.GameSimulation);
         }
 
         public void OnDispose()

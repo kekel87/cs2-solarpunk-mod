@@ -17,6 +17,7 @@ docs/plans/               plans en cours (NNN-nom.md)
 scripts/memory/           outils du graphe de mémoire
 src/SolarpunkMod/         le mod : SolarpunkMod.csproj, Mod.cs (IMod), Properties/ (publication Paradox Mods)
   Info/                   panneau d'info : SolarpunkInfoUISystem (calcul + bindings), CityInfoLocale (textes en/fr)
+  Policies/               politiques de district par code : prefab au pré-chargement, systèmes d'effet, textes
   UI/                     module UI TypeScript/React (scaffold officiel create-csii-ui-mod)
 ```
 

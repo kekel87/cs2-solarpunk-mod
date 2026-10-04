@@ -251,7 +251,7 @@ Fil : **mesurer → retirer les camions → retirer les voitures → chaleur et 
 |---|---|---|
 | 0 | ✅ Socle : décompiler 1.6.2f1, mod chargé, logs | — |
 | 1 | ✅ **Panneau d'info** (fait, recetté le 04/10/2026) : part modale, voitures, camions de livraison, bennes, trains de marchandises, part d'électricité renouvelable — instantané ville, lecture seule | Des chiffres qui bougent |
-| 1 bis | **Politique « Toits solaires »** : petit gain, met en place la création de politiques de district (réutilisée au jalon 5) | Conso du district en baisse |
+| 1 bis | **Politique « Fin du stationnement résidentiel »** : places de rue fermées, fourrière après préavis, moins de voitures prises pour le travail et l'école ; met en place la création de politiques de district (réutilisée au jalon 5). « Toits solaires » reporté au jalon 6 | Rues sans voitures garées |
 | 2 | **Quartier sans camion** : rail attractif par données + Local Hub (`SaleFlags.Virtual`) | District livré sans camion |
 | 3 | **Déchets bout en bout** : incinérateur / centre de tri reliés au rail, à l'autre bout des yards de Tigon ; indicateur « déchets collectés par train » au panneau | Train-poubelle jusqu'au traitement |
 | 4 | **Cargo tram** : raccourci voies mixtes, puis version clonée | Trams de marchandises en voirie |

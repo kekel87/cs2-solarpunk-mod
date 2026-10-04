@@ -63,6 +63,11 @@ Fragile : une MAJ du jeu qui change la version Unity / Entities oblige à refair
 
 - Lancement : `flatpak run com.valvesoftware.Steam steam://rungameid/949230`. Options de lancement
   Steam posées : `--developerMode --uiDeveloperMode`.
+- Rechargement à chaud : seulement l'**UI**. Un build qui réécrit `Mods/SolarpunkMod` recharge
+  l'interface en jeu (`UI.log` : `Reloading media 0`) ; le **DLL C# ne se recharge pas** (`OnLoad`
+  une fois par lancement) → relancer le jeu pour tester la simulation [C].
+- Lancer le jeu (Steam en Flatpak, pas de commande `steam`) : `flatpak run com.valvesoftware.Steam
+  steam://rungameid/949230` [C].
 - Détecter le jeu : `pgrep -f "[C]ities2.exe"` (sans les crochets, `pgrep -f` matche sa propre
   commande).
 - Plein écran **fenêtré** conseillé sous Proton (Alt-Tab).
