@@ -40,12 +40,15 @@ nostalgie anti-ville. Sources : `references/fiction-et-pensee-urbaine.md`.
 
 | # | Module | État | Faisabilité |
 |---|---|---|---|
-| 1 | **Déchets par rail** (train-poubelle) | Prochain | Bien supporté par le moteur, surtout de l'authoring de prefab — voir `references/dechets-par-rail-code-du-jeu.md`. ✅ Testé le 03/10/2026 : les « Train Garbage Yards » de Tigons Rail Infrastructure (133250) font déjà circuler des trains de déchets entre gares de la ville. **On s'appuie sur 133250** (décision 010 ; entrées non électrifiées à masquer si possible) → notre module se recentre sur ce que Tigon ne fait pas |
+| 1 | **Déchets par rail** (train-poubelle) | Jalon 3 | Bien supporté par le moteur, surtout de l'authoring de prefab — voir `references/dechets-par-rail-code-du-jeu.md`. ✅ Testé le 03/10/2026 : les « Train Garbage Yards » de Tigons Rail Infrastructure (133250) font déjà circuler des trains de déchets entre gares de la ville. **On s'appuie sur 133250** (décision 010 ; entrées non électrifiées à masquer si possible) → notre module se recentre sur ce que Tigon ne fait pas |
 | 2 | **Cargo tram / métro de marchandises** | Idée | Deux cases vides d'une matrice que le jeu remplit déjà 3 fois (Cargo Train/Ship/Airplane). Piste : pas de nouvel enum, `TransportType.Tram` + ligne/arrêt/véhicule clonés en mode cargo — voir `references/bonnes-pratiques-modding.md` |
 | 3 | **Local Hub** (point de service + rail) | Idée | Brique existante : ICS (146817) transfère des ressources sans camion ni gare. Hook possible : intercepter avant dispatch, comme Industrial Freight Optimizer |
 | 4 | **Usine branchée au rail** | Idée | Asset + composant gare de fret. Change Internal Roads (147332) prouve que les voies ferrées internes existent |
 | 5 | **Vélo-cargo** | Idée | Aucun précédent. Version « fausse » (prefab vélo sur rue interdite aux voitures) facile et visuellement suffisante |
-| 6 | **Climat urbain** (chaleur, eaux pluviales, renaturation simulée) | Lointain | Rien n'existe. Gros chantier |
+| 6 | **Panneau d'info** (part modale, camions, fret, électricité renouvelable) | Prochain | Lecture seule de l'ECS. Aucun mod ne donne la part modale ville (InfoLoom non plus) |
+| 7 | **Énergie citoyenne** (toits solaires, solaire de balcon) | Idée | Politique de district clonée d'*Energy Consumption Awareness* — à confirmer dans le décompilé |
+| 8 | **Chaleur et énergie** (carte de chaleur, clim/chauffage, réseau de chaleur) | Lointain | Rien n'existe. Gros chantier |
+| 9 | **Eaux pluviales** (renaturation simulée) | Lointain | Réveiller `SoilWaterSystem` |
 
 Vérifié le 03/10/2026 : **aucun mod de cargo tram, métro de marchandises, vélo-cargo, climat urbain
 ni zone sans voiture par district** — détail dans `references/mods-existants.md`. Précédents
@@ -104,7 +107,7 @@ arbres nettoient air et bruit (concurrent : Trees Defend Air, Noise Pollution 15
 ### Outillage joueur
 
 Skyve (75804) · Find It (77240) · Move It (74324) · Anarchy (74604) · 529 Tiles (74328) ·
-InfoLoom (91433) pour vérifier la part modale.
+InfoLoom (91433, démographie et emploi — **pas** de part modale).
 
 Liens : `https://mods.paradoxplaza.com/mods/<ID>/Windows`
 
@@ -165,6 +168,19 @@ Toutes retenues par l'humain (« j'aime toutes ces idées »), **non ordonnées*
 - **Réacteur de fusion de démonstration** : tardif, cher, capricieux — morale « la ville a été
   décarbonée avant la fusion ».
 - **Monument ARES** (stockage par wagons sur pente) avec infobulle honnête.
+- **Toits solaires de district** (Green Cities « self-sufficient ») et **solaire de balcon**
+  (Allemagne) : politiques qui baissent la conso des bâtiments zonés — vanilla n'en a pas.
+- **Rénovation Energiesprong** : conversion progressive d'un district, creux de chantier.
+- **Clim et chauffage** (idée de l'humain, 04/10/2026) : la carte de chaleur pilote la demande de
+  clim (pic électrique, rejets chauds qui réchauffent la rue) ; l'hiver, le chauffage. Leviers
+  passifs (canopée, cool roofs, isolation) et collectifs (réseau de chaleur relié à
+  l'incinérateur, anergie chaud et froid, stockage saisonnier Drake Landing). Le solaire produit
+  quand la clim tourne.
+- **Sortir du gaz quartier par quartier** (Pays-Bas, *wijkaanpak*) : mode de chauffage abstrait
+  par bâtiment (gaz → pompe à chaleur / réseau de chaleur), biométhane issu des déchets ;
+  hydrogène de chauffage au Chirper anti-hype.
+- Micro-hydro en conduite d'eau, solaire flottant, agrivoltaïsme, autoconsommation collective.
+- Détail et sources : `references/energie-et-politiques.md`.
 
 **Innovations qui marchent** (`references/innovations-climat-logistique.md`)
 - **Cargo à voile** (Neoline, TOWT, Grain de Sail — en service) : Cargo Ship cloné, pollution nulle.
@@ -219,8 +235,24 @@ deux trajectoires, équité et climat comme systèmes de premier rang — ça ne
 **Position** : la mobilité et le fret sont ce qui amuse *et* ce qui est modable → le mod. Le
 prototype web reste la maison du GDD si la flèche du temps redevient le sujet.
 
-## Prochain pas : à rediscuter
+## Roadmap (04/10/2026)
 
-Le train-poubelle était le candidat (faisable, image forte, `Garbage` = ressource ordinaire donc un
-seul réseau de fret). Remis en question le 03/10/2026 : Tigons Rail Infrastructure (133250) a déjà
-des « Train Garbage Yards » d'export — à tester en jeu. Le choix du premier POC se fait au `/next`.
+Fil : **mesurer → retirer les camions → retirer les voitures → chaleur et énergie**. Chaque jalon
+= une démo publiable. v0.1 = jalons 1 + 1 bis + 2 (« un quartier sans camion, mesuré »).
+
+| Jalon | Contenu | En jeu |
+|---|---|---|
+| 0 | Socle : décompiler 1.6.2f1, mod chargé, logs | — |
+| 1 | **Panneau d'info** : part modale, voitures, camions, bennes, fret rail, part d'électricité renouvelable — instantané ville, lecture seule | Des chiffres qui bougent |
+| 1 bis | **Politique « Toits solaires »** : petit gain, met en place la création de politiques de district (réutilisée au jalon 5) | Conso du district en baisse |
+| 2 | **Quartier sans camion** : rail attractif par données + Local Hub (`SaleFlags.Virtual`) | District livré sans camion |
+| 3 | **Déchets bout en bout** : incinérateur / centre de tri reliés au rail, à l'autre bout des yards de Tigon | Train-poubelle jusqu'au traitement |
+| 4 | **Cargo tram** : raccourci voies mixtes, puis version clonée | Trams de marchandises en voirie |
+| 5 | **Quartier sans voiture** : filtre modal par district + vélo-cargo | District piéton livré à vélo |
+| 6 | **Chaleur et énergie** : carte de chaleur, clim/chauffage par bâtiment, leviers passifs, réseau de chaleur depuis l'incinérateur | Îlots de chaleur, la canopée les réduit |
+| 7 | **Eaux pluviales** | Inondations, rues-éponges |
+| Final | **Scénario « transformer une ville existante »** : objectifs tirés du panneau, paliers | Partie guidée |
+
+Panneau v1 : pas de « camions évités » ni de CO₂ (contrefactuel douteux), pas de vue par district
+(v2, au jalon 2). Hors roadmap, sans date : bimodes/capsules, métro de marchandises Chicago,
+versions souterraines, fusion, dirigeable, ARES, cargo à voile, sortie du gaz.

@@ -115,4 +115,4 @@ districts l'ont.
 Température locale et effet de la chaleur sur la santé · ruissellement, imperméabilisation
 (inondation par la pluie = code mort) · absorption par les arbres, pluie qui lave l'air · CO₂,
 carburant · vraie interdiction de circuler par district · tri/recyclage/compost (déchets = une seule
-ressource) · dernier km hors camion, cargo léger · part modale exploitable (InfoLoom).
+ressource) · dernier km hors camion, cargo léger · part modale (aucun mod ne l’affiche, InfoLoom non plus).
