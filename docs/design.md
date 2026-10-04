@@ -90,6 +90,13 @@ Fuites connues : visiteurs et touristes en voiture (Tourism Overhaul 153543 les 
 avion/ferry, à vérifier) ; véhicules de service incompressibles (normal). Weather Aware Citizens
 (161229) annule les trajets à pied et à vélo par mauvais temps : effet anti-vélo.
 
+### Tracé de quartiers
+
+| Mod | ID | Rôle |
+|---|---|---|
+| Grid Road Generator | 151745 | Remplit un périmètre libre de rues organiques (culs-de-sac, raquettes, collectrices courbes). Dépendance pressentie du jalon 5 bis ; [GitHub](https://github.com/Ti4goc/GridRoadGenerator) sans licence |
+| Copaste | 154371 | Copier-coller et tampons de réseaux routiers |
+
 ### Fret ferroviaire
 
 Tigons Rail Infrastructure (133250, remplace 90794 déprécié) · Dedicated Cargo Facilities (156605,

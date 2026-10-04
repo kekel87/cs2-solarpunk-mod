@@ -36,6 +36,7 @@ le module 1 change d'objet (gare de transfert urbaine, dispatch, incinérateur e
 | 157113 | Vehicle Control Framework (DreamRebel) | — | — | Choix du modèle de véhicule par flotte (dont « garbage transfer ») → piste vélo-cargo « faux » |
 | 141632 | Transport Dynamic Scaling | — | — | Nombre de véhicules des lignes cargo selon remplissage (1.5) |
 | 141755 | Industrial Freight Optimizer | fermé | — | Réduit les demandes avant dispatch. **1.5.10f1, probablement cassé** |
+| 151745 | Grid Road Generator (Ti4goc) | [GitHub](https://github.com/Ti4goc/GridRoadGenerator) | **aucune** | Routes créées par code : `ToolBaseSystem` → `CreationDefinition` + `NetCourse` via `ToolOutputBarrier`, intersections par la sim vanilla. Modèle du jalon 5 bis (lecture, pas de copie) |
 | 75613 | Water Features (yenyang) | [GitHub](https://github.com/yenyang/Water_Features) | — | Base pour les eaux pluviales |
 
 **Licences** : MIT (MagicGarbage, Local Logistics) = code réutilisable. GPL-3.0 (Parking Control) =
