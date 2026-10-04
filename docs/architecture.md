@@ -16,7 +16,19 @@ docs/references/          recherches (code du jeu, mods existants)
 docs/plans/               plans en cours (NNN-nom.md)
 scripts/memory/           outils du graphe de mémoire
 src/SolarpunkMod/         le mod : SolarpunkMod.csproj, Mod.cs (IMod), Properties/ (publication Paradox Mods)
+  Info/                   panneau d'info : SolarpunkInfoUISystem (calcul + bindings), CityInfoLocale (textes en/fr)
+  UI/                     module UI TypeScript/React (scaffold officiel create-csii-ui-mod)
 ```
+
+## Module UI
+
+`UI/` vient du template officiel (`.ModdingToolchain/npx-create-csii-ui-mod/template`). Seul écart
+avec le stock : `webpack.config.js` sort via `path.join` (sinon, sous Linux, le bundle atterrit hors
+de `Mods/`) — à réappliquer après un `npm run update`. `dotnet build` construit l'UI (cible
+`BuildUI`, après `DeployWIP` qui vide le dossier du mod ; `npm ci` si `node_modules` manque).
+Sortie : `SolarpunkMod.mjs` + `.css` à côté de la DLL. Identité commune C# / UI : `Mod.Id` =
+`mod.json` `id` = `SolarpunkMod`, sert de groupe de bindings et de préfixe des clés de traduction.
+Textes : enregistrés côté C# (`MemorySource`), lus côté UI par `useLocalization`.
 
 ## Principe d'organisation du mod (cible)
 

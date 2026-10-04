@@ -45,7 +45,7 @@ nostalgie anti-ville. Sources : `references/fiction-et-pensee-urbaine.md`.
 | 3 | **Local Hub** (point de service + rail) | Idée | Brique existante : ICS (146817) transfère des ressources sans camion ni gare. Hook possible : intercepter avant dispatch, comme Industrial Freight Optimizer |
 | 4 | **Usine branchée au rail** | Idée | Asset + composant gare de fret. Change Internal Roads (147332) prouve que les voies ferrées internes existent |
 | 5 | **Vélo-cargo** | Idée | Aucun précédent. Version « fausse » (prefab vélo sur rue interdite aux voitures) facile et visuellement suffisante |
-| 6 | **Panneau d'info** (part modale, camions, fret, électricité renouvelable) | Prochain | Lecture seule de l'ECS. Aucun mod ne donne la part modale ville (InfoLoom non plus) |
+| 6 | **Panneau d'info** (part modale, camions, fret, électricité renouvelable) | ✅ Fait (jalon 1) | Lecture seule de l'ECS. Aucun mod ne donne la part modale ville (InfoLoom non plus) |
 | 7 | **Énergie citoyenne** (toits solaires, solaire de balcon) | Idée | Politique de district clonée d'*Energy Consumption Awareness* — à confirmer dans le décompilé |
 | 8 | **Chaleur et énergie** (carte de chaleur, clim/chauffage, réseau de chaleur) | Lointain | Rien n'existe. Gros chantier |
 | 9 | **Eaux pluviales** (renaturation simulée) | Lointain | Réveiller `SoilWaterSystem` |
@@ -242,8 +242,8 @@ Fil : **mesurer → retirer les camions → retirer les voitures → chaleur et 
 
 | Jalon | Contenu | En jeu |
 |---|---|---|
-| 0 | Socle : décompiler 1.6.2f1, mod chargé, logs | — |
-| 1 | **Panneau d'info** : part modale, voitures, camions, bennes, fret rail, part d'électricité renouvelable — instantané ville, lecture seule | Des chiffres qui bougent |
+| 0 | ✅ Socle : décompiler 1.6.2f1, mod chargé, logs | — |
+| 1 | ✅ **Panneau d'info** (fait, recetté le 04/10/2026) : part modale, voitures, camions de livraison, bennes, trains de marchandises, part d'électricité renouvelable — instantané ville, lecture seule | Des chiffres qui bougent |
 | 1 bis | **Politique « Toits solaires »** : petit gain, met en place la création de politiques de district (réutilisée au jalon 5) | Conso du district en baisse |
 | 2 | **Quartier sans camion** : rail attractif par données + Local Hub (`SaleFlags.Virtual`) | District livré sans camion |
 | 3 | **Déchets bout en bout** : incinérateur / centre de tri reliés au rail, à l'autre bout des yards de Tigon | Train-poubelle jusqu'au traitement |
@@ -254,5 +254,7 @@ Fil : **mesurer → retirer les camions → retirer les voitures → chaleur et 
 | Final | **Scénario « transformer une ville existante »** : objectifs tirés du panneau, paliers | Partie guidée |
 
 Panneau v1 : pas de « camions évités » ni de CO₂ (contrefactuel douteux), pas de vue par district
-(v2, au jalon 2). Hors roadmap, sans date : bimodes/capsules, métro de marchandises Chicago,
+(v2, au jalon 2). Limite connue : « à pied » est gonflé (toute personne dehors sans véhicule compte,
+ex. du parking à la porte). Ratio fret rail/camion écarté (rail compté au chargement, camion à chaque
+livraison : trompeur). Hors roadmap, sans date : bimodes/capsules, métro de marchandises Chicago,
 versions souterraines, fusion, dirigeable, ARES, cargo à voile, sortie du gaz.

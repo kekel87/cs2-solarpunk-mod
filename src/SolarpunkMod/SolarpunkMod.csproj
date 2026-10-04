@@ -21,6 +21,15 @@
 		<Reference Include="Colossal.Logging">
 			<Private>false</Private>
 		</Reference>
+		<Reference Include="Colossal.Mathematics">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Colossal.Localization">
+			<Private>false</Private>
+		</Reference>
+		<Reference Include="Colossal.UI.Binding">
+			<Private>false</Private>
+		</Reference>
 		<Reference Include="Colossal.IO.AssetDatabase">
 			<Private>false</Private>
 		</Reference>
@@ -52,6 +61,12 @@
 			<Private>false</Private>
 		</Reference>
 	</ItemGroup>
+
+	<!--Builds the UI module into the deployed mod folder; must run after DeployWIP, which wipes it-->
+	<Target Name="BuildUI" AfterTargets="DeployWIP">
+		<Exec Command="npm ci" WorkingDirectory="UI" Condition="!Exists('UI/node_modules')" />
+		<Exec Command="npm run build" WorkingDirectory="UI" />
+	</Target>
 
 	<ItemGroup>
 		<None Include="$(ModPropsFile)" Link="Properties\Mod.props" />

@@ -42,7 +42,9 @@ Variables dans `~/.config/environment.d/60-cs2-modding.conf` (relogin requis) [C
 Correctifs obligatoires sous Linux [C] (`EnvironmentVariableTarget.User` y renvoie null) :
 - `Mod.props` : retirer `, 'EnvironmentVariableTarget.User'` ;
 - `.csproj` : repli sur `$(CSII_TOOLPATH)`.
-- Si UI : chemins `\\` du `webpack.config.js`.
+- Si UI : chemins `\\` du `webpack.config.js` (sortie via `path.join`, déjà appliqué dans `src/SolarpunkMod/UI`).
+- Build UI : **Node/npm requis** ; `dotnet build` lance `npm ci && npm run build` (cible `BuildUI`).
+- Types `cs2/l10n` du scaffold défectueux pour `LocalizedNumber` (cast nécessaire côté UI).
 
 Correctif local en plus du script [C], constaté au premier build : Proton 11 écrit
 `ntsync: up and running.` sur stderr, et `Mod.targets` traite tout stderr comme une erreur
@@ -56,6 +58,28 @@ le refaire après chaque relance.
 suffit peut-être pour du Harmony pur [S].
 
 Fragile : une MAJ du jeu qui change la version Unity / Entities oblige à refaire le setup.
+
+## Lancer, arrêter, désactiver
+
+- Lancement : `flatpak run com.valvesoftware.Steam steam://rungameid/949230`. Options de lancement
+  Steam posées : `--developerMode --uiDeveloperMode`.
+- Détecter le jeu : `pgrep -f "[C]ities2.exe"` (sans les crochets, `pgrep -f` matche sa propre
+  commande).
+- Plein écran **fenêtré** conseillé sous Proton (Alt-Tab).
+- 🔴 Le jeu charge les mods depuis **tout** le dossier de données utilisateur : renommer un mod en
+  `SolarpunkMod.disabled` hors de `Mods/` ne le désactive pas. Pour désactiver (test « retrait du
+  mod »), **sortir le dossier des données du jeu**.
+- Écran Options → Mods : la chaîne d'outils y apparaît « Non installé ». À ignorer sous Linux,
+  **ne pas cliquer Installer**.
+
+## Code décompilé du jeu
+
+- Dépôt git local `~/Documents/dev/cs2-decompile` : un commit par version du jeu (actuel : 1.6.2f1),
+  chemins `src/Game/…`. Registre de la machine : `~/.cs2-modding/setup.md`.
+- Outil : **ilspycmd 9.1.0.7988** local (le SDK .NET 8 refuse ilspycmd 11, même avec
+  `--allow-roll-forward`).
+- Copie lisible du bundle UI du jeu : `ui/index.js` (140104 lignes), pour lire les composants
+  `cs2/ui` et les bindings vanilla.
 
 ## Chemins sous Proton
 
