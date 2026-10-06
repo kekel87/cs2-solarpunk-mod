@@ -13,11 +13,17 @@ docs/design.md            vision, modules, mods compagnons
 docs/architecture.md      ce fichier
 docs/modding-linux.md     toolchain Fedora/Proton
 docs/references/          recherches (code du jeu, mods existants)
-docs/plans/               plans en cours (NNN-nom.md)
+docs/plans/               plans en cours (NNN-nom.md) ; recette-AAAA-MM-JJ.md = cahier de recette
+assets/                   sources des modèles 3D (scripts Blender : vehicles/, buildings/)
 scripts/memory/           outils du graphe de mémoire
 src/SolarpunkMod/         le mod : SolarpunkMod.csproj, Mod.cs (IMod), Properties/ (publication Paradox Mods)
-  Info/                   panneau d'info : SolarpunkInfoUISystem (calcul + bindings), CityInfoLocale (textes en/fr)
+  Info/                   panneau d'info : SolarpunkInfoUISystem (calcul + bindings), CityInfoLocale (textes en/fr),
+                          DistrictLocator / SolarpunkDistrictSection / TravelModeClassifier (section « Solarpunk » du panneau district)
   Policies/               politiques de district par code : prefab au pré-chargement, systèmes d'effet, textes
+  Rail/                   rail diesel masqué de la barre d'outils (par nom) et option « Trains électriques seulement »
+  Hub/                    Local Hub : HubSaleSystem (vente faite par le mod), HubDeliveryVehicles (petits véhicules), prefab autonome
+  Station/                StationPlatformSystem : amélioration « Quai fret » / quai déchets sur gare (ServiceUpgrade)
+  ModSettings.cs          Options (Trains électriques seulement, rayon du Local Hub 600 m)
   UI/                     module UI TypeScript/React (scaffold officiel create-csii-ui-mod)
 ```
 
@@ -39,3 +45,12 @@ Textes : enregistrés côté C# (`MemorySource`), lus côté UI par `useLocaliza
 Un seul assembly, un dossier par module (`Garbage/`, `CargoTransit/`, `Climate/`…), chacun avec
 ses systèmes ECS et ses prefabs créés par code. Un point d'entrée `Mod.cs` (`IMod.OnLoad`) qui
 enregistre les systèmes et détecte les mods compagnons optionnels.
+
+## Sauvegarde et données sérialisées
+
+Règle (CLAUDE.md, assouplie le 05/10/2026) : un bâtiment du mod peut devenir « objet manquant » au
+retrait ; la partie doit toujours charger. Le Local Hub est un clone autonome de `CargoTrainTerminal01`
+reconnu par son prefab : aucun composant du mod n'est sérialisé. Le panneau district n'écrit rien.
+Les extensions de gare/incinérateur copient les données cargo (`StorageCompanyData`, `StorageLimitData`,
+`CargoTransportStationData`, `TransportCompanyData`) sur le prefab principal, car `StorageCompanySystem`
+les lit avant d'additionner les extensions (plans 008, 009).

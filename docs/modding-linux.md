@@ -112,6 +112,33 @@ ajouter le composant, `PrefabSystem.AddPrefab` [S]. Exemple réel :
 `ExchangeHubPrefabBootstrapSystem.cs` dans https://github.com/apavarino/MultiSkyLinesII [C].
 L'éditeur d'assets sous Proton : non documenté, à tester [S].
 
+## Assets et import (modèles 3D)
+
+Modèles générés par scripts Python Blender (`assets/vehicles`, `assets/buildings`), sans dépendance
+à un asset tiers.
+
+- **Blender 5.2 en flatpak utilisateur** [C] : `flatpak remote-add --user flathub …`, puis
+  `flatpak install --user flathub org.blender.Blender`. Lancement en script :
+  `flatpak run --filesystem=<dépôt> org.blender.Blender --background --python <chemin absolu>/build.py`.
+- **Export FBX pour CS2** [C] : l'importeur lit les sommets bruts. Baker la rotation −90° X et
+  l'échelle ×100 dans le maillage avant export (comme l'add-on CS2-Exporter-for-Blender), export
+  `axis_up` Y / `forward` −Z, `FBX_SCALE_ALL`. Sinon : Bounds ±0,004 (100× trop petit, couché).
+- **Noms** : pas de `_` dans le nom d'asset (l'importeur coupe dessus) ; suffixes de textures
+  `_BaseColor`, `_ControlMask`, `_MaskMap`, `_Normal`, `_LOD1`.
+- **Import** : Steam flatpak ne voit que `~/Jeux` → déposer dans `~/Jeux/cs2-import/<NomAsset>/`
+  (`Z:\home\kekel\Jeux\cs2-import` côté jeu). Éditeur → Asset Importer → « Prefab existant dans le
+  projet » → `EU_DeliveryVan01` pour un véhicule (**pas** `MotorbikeDelivery01` : ActivityPropPrefab à
+  squelette). En-tête attendu : CAR PREFAB + DELIVERY TRUCK. Bâtiment : préréglage Building.
+- **Bug connu** : traînées/franges de texture sur les vélos et le triporteur (pas le kei truck), en
+  analyse (graphe : `feedback-modeles-3d-premiere-version`).
+
+## Lancement et pièges Proton
+
+- Options de lancement [C] : `-startEditor` ; `-continuelastsave` (`GameManager.cs:413-439`).
+  `flatpak run com.valvesoftware.Steam -applaunch 949230 -startEditor`.
+- Le jeu **plante** sur la capture d'écran du jeu ou Alt+Tab : utiliser la capture d'écran Fedora.
+- Les « Erreurs système » `Cannot abort request with ID` viennent de l'UI du jeu, sans gravité.
+
 ## Dépendances de mods
 
 - `Properties/PublishConfiguration.xml` [C] : `<Dependency Id="74417" DisplayName="Unified Icon Library" />`

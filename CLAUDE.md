@@ -25,6 +25,7 @@ Claude = dev principal, autonome sur l'implémentation, valide le design avec l'
 | `docs/design.md` | Vision, modules, ce que fait chaque mod compagnon. Avant toute mécanique |
 | `docs/architecture.md` | Avant créer un fichier/projet, changer la structure |
 | `docs/modding-linux.md` | Toolchain sous Fedora/Proton, chemins, build, logs |
+| `docs/references/base-connaissances/` | **Avant de coder ou de produire un asset** : quoi lire dans le plugin `cs2-modding` selon le module, conventions C#/ECS et UI de notre contexte, mécaniques du jeu vérifiées, pipeline 3D, leçons. Chercher les pratiques établies (base, skills `cs2-modding`, web) AVANT de produire |
 | `docs/references/` | Recherches : code décompilé du jeu, mods existants |
 | `docs/plans/` | Plan en cours avant coder |
 
@@ -39,7 +40,9 @@ Pas tout charger. Lire le fichier pertinent au moment pertinent.
 - **Dépendre plutôt que refaire** : si un mod existant fait le travail, on le déclare en
   dépendance (`Properties/PublishConfiguration.xml`, balise `<Dependency Id=… />`) ; dépendance
   optionnelle = détection au runtime via `GameManager.instance.modManager`
-- **Sauvegarde sacrée** : retirer le mod ne doit jamais corrompre une partie
+- **Sauvegarde sacrée** : retirer le mod ne doit jamais empêcher une partie de charger ni casser la
+  simulation. Les bâtiments ajoutés par le mod peuvent devenir des « objets manquants », comme pour
+  tout mod d'assets
 - **Petit, incrémental** : 1 changement = 1 chose. Pas de sur-ingénierie
 
 ## Conventions
