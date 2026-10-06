@@ -61,7 +61,7 @@ module.exports = {
               modules: {
                 auto: true,
                 exportLocalsConvention: "camelCase",
-                localIdentName: "[local]_[hash:base64:3]",
+                localIdentName: "SolarpunkMod_[local]_[hash:base64:5]",
               },
             },
           },

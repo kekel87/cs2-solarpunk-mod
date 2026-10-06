@@ -28,7 +28,7 @@ namespace SolarpunkMod.Policies
         private PolicyTogglePrefab m_Prefab;
         private EntityQuery m_DistrictQuery;
 
-        private Entity PolicyEntity =>
+        public Entity PolicyEntity =>
             m_Prefab != null && m_PrefabSystem.TryGetEntity(m_Prefab, out var entity) ? entity : Entity.Null;
 
         protected override void OnCreate()

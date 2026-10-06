@@ -40,9 +40,17 @@ namespace SolarpunkMod.Info
             ["DELIVERY_TRUCKS"] = "Delivery trucks",
             ["GARBAGE_TRUCKS"] = "Garbage trucks",
             ["CARGO_TRAINS"] = "Cargo trains",
+            ["GARBAGE_TRAINS"] = "Garbage trains",
+            ["GARBAGE_ON_TRAINS"] = "Garbage on trains",
+            ["GARBAGE_ABOARD"] = "Aboard",
+            ["GARBAGE_ON_TRAINS_TOOLTIP"] = "Garbage aboard the cargo trains on the move right now, through traffic excluded.",
             ["ELECTRICITY"] = "Electricity",
             ["RENEWABLE_SHARE"] = "Renewable share",
             ["RENEWABLE_TOOLTIP"] = "Wind, solar and hydro share of the city's available power plant capacity, as in the electricity info view. Imports not included.",
+            ["DISTRICT_TITLE"] = "Solarpunk",
+            ["DISTRICT_TOOLTIP"] = "Traffic in the district right now, roads on its border included. Car share: green up to 20 %, red above 40 %. Delivery trucks: green under 0.1 per km of road, red from 0.5. Bars: history since the district was selected.",
+            ["NOT_ENOUGH_DATA"] = "Not enough data",
+            ["SMALL_DELIVERY_VEHICLES"] = "Small delivery vehicles",
         };
 
         private static readonly Dictionary<string, string> French = new Dictionary<string, string>
@@ -59,9 +67,17 @@ namespace SolarpunkMod.Info
             ["DELIVERY_TRUCKS"] = "Camions de livraison",
             ["GARBAGE_TRUCKS"] = "Bennes à ordures",
             ["CARGO_TRAINS"] = "Trains de marchandises",
+            ["GARBAGE_TRAINS"] = "Trains-poubelle",
+            ["GARBAGE_ON_TRAINS"] = "Déchets en train",
+            ["GARBAGE_ABOARD"] = "À bord",
+            ["GARBAGE_ON_TRAINS_TOOLTIP"] = "Déchets à bord des trains de marchandises en circulation, trafic de transit exclu.",
             ["ELECTRICITY"] = "Électricité",
             ["RENEWABLE_SHARE"] = "Part renouvelable",
             ["RENEWABLE_TOOLTIP"] = "Part de l'éolien, du solaire et de l'hydraulique dans la capacité disponible des centrales de la ville, comme dans la vue électricité. Importations non comptées.",
+            ["DISTRICT_TITLE"] = "Solarpunk",
+            ["DISTRICT_TOOLTIP"] = "Circulation dans le district en ce moment, routes de bordure comprises. Part voiture : vert jusqu'à 20 %, rouge au-delà de 40 %. Camions de livraison : vert sous 0,1 par km de route, rouge dès 0,5. Barres : historique depuis la sélection du district.",
+            ["NOT_ENOUGH_DATA"] = "Pas assez de données",
+            ["SMALL_DELIVERY_VEHICLES"] = "Petits véhicules de livraison",
         };
     }
 }

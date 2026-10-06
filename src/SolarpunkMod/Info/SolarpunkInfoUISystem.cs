@@ -5,10 +5,11 @@ using Game;
 using Game.Buildings;
 using Game.Common;
 using Game.Creatures;
-using Game.Routes;
+using Game.Economy;
 using Game.Tools;
 using Game.UI;
 using Game.Vehicles;
+using SolarpunkMod.Hub;
 using Unity.Collections;
 using Unity.Entities;
 
@@ -34,13 +35,8 @@ namespace SolarpunkMod.Info
         private EntityQuery m_ElectricityProducerQuery;
         private EntityQuery m_RenewableElectricityProducerQuery;
 
-        private ComponentLookup<CurrentVehicle> m_CurrentVehicleLookup;
-        private ComponentLookup<HumanCurrentLane> m_HumanCurrentLaneLookup;
-        private ComponentLookup<TaxiStand> m_TaxiStandLookup;
-        private ComponentLookup<Bicycle> m_BicycleLookup;
-        private ComponentLookup<PersonalCar> m_PersonalCarLookup;
-        private ComponentLookup<Taxi> m_TaxiLookup;
-        private ComponentLookup<PublicTransport> m_PublicTransportLookup;
+        private TravelModeClassifier m_TravelModeClassifier;
+        private HubSaleSystem m_HubSaleSystem;
 
         private ValueBinding<float> m_CarShareBinding;
         private ValueBinding<float> m_BicycleShareBinding;
@@ -48,9 +44,15 @@ namespace SolarpunkMod.Info
         private ValueBinding<float> m_WalkingShareBinding;
         private ValueBinding<int> m_PersonalCarCountBinding;
         private ValueBinding<int> m_DeliveryTruckCountBinding;
+        private ValueBinding<int> m_SmallDeliveryVehicleCountBinding;
         private ValueBinding<int> m_GarbageTruckCountBinding;
         private ValueBinding<int> m_CargoTrainCountBinding;
+        private ValueBinding<int> m_GarbageTrainCountBinding;
+        private ValueBinding<int> m_GarbageOnTrainsBinding;
         private ValueBinding<float> m_RenewableElectricityShareBinding;
+
+        private BufferLookup<LayoutElement> m_LayoutLookup;
+        private BufferLookup<Resources> m_ResourcesLookup;
 
         private readonly ModalCounts[] m_ModalSamples = new ModalCounts[ModalShareSampleCount];
         private int m_ModalSampleIndex;
@@ -71,6 +73,7 @@ namespace SolarpunkMod.Info
             m_DeliveryTruckQuery = LiveQuery(
                 ComponentType.ReadOnly<DeliveryTruck>(),
                 ComponentType.ReadOnly<CarCurrentLane>(),
+                ComponentType.ReadOnly<Game.Prefabs.PrefabRef>(),
                 ComponentType.Exclude<ParkedCar>());
             m_GarbageTruckQuery = LiveQuery(
                 ComponentType.ReadOnly<GarbageTruck>(),
@@ -87,13 +90,10 @@ namespace SolarpunkMod.Info
                 ComponentType.ReadOnly<ElectricityProducer>(),
                 ComponentType.ReadOnly<RenewableElectricityProduction>());
 
-            m_CurrentVehicleLookup = GetComponentLookup<CurrentVehicle>(true);
-            m_HumanCurrentLaneLookup = GetComponentLookup<HumanCurrentLane>(true);
-            m_TaxiStandLookup = GetComponentLookup<TaxiStand>(true);
-            m_BicycleLookup = GetComponentLookup<Bicycle>(true);
-            m_PersonalCarLookup = GetComponentLookup<PersonalCar>(true);
-            m_TaxiLookup = GetComponentLookup<Taxi>(true);
-            m_PublicTransportLookup = GetComponentLookup<PublicTransport>(true);
+            m_TravelModeClassifier = new TravelModeClassifier(this);
+            m_HubSaleSystem = World.GetOrCreateSystemManaged<HubSaleSystem>();
+            m_LayoutLookup = GetBufferLookup<LayoutElement>(true);
+            m_ResourcesLookup = GetBufferLookup<Resources>(true);
 
             m_CarShareBinding = Bind("carShare", 0f);
             m_BicycleShareBinding = Bind("bicycleShare", 0f);
@@ -101,8 +101,11 @@ namespace SolarpunkMod.Info
             m_WalkingShareBinding = Bind("walkingShare", 0f);
             m_PersonalCarCountBinding = Bind("personalCarCount", 0);
             m_DeliveryTruckCountBinding = Bind("deliveryTruckCount", 0);
+            m_SmallDeliveryVehicleCountBinding = Bind("smallDeliveryVehicleCount", 0);
             m_GarbageTruckCountBinding = Bind("garbageTruckCount", 0);
             m_CargoTrainCountBinding = Bind("cargoTrainCount", 0);
+            m_GarbageTrainCountBinding = Bind("garbageTrainCount", 0);
+            m_GarbageOnTrainsBinding = Bind("garbageOnTrains", 0);
             m_RenewableElectricityShareBinding = Bind("renewableElectricityShare", 0f);
         }
 
@@ -124,9 +127,11 @@ namespace SolarpunkMod.Info
 
             UpdateModalShare();
             m_PersonalCarCountBinding.Update(Count(m_PersonalCarQuery, (PersonalCar car) => (car.m_State & PersonalCarFlags.DummyTraffic) == 0));
-            m_DeliveryTruckCountBinding.Update(Count(m_DeliveryTruckQuery, (DeliveryTruck truck) => (truck.m_State & DeliveryTruckFlags.DummyTraffic) == 0));
+            var deliveryVehicles = DeliveryVehicleCount.Of(m_DeliveryTruckQuery, m_HubSaleSystem.DeliveryVehicles, null);
+            m_DeliveryTruckCountBinding.Update(deliveryVehicles.Trucks);
+            m_SmallDeliveryVehicleCountBinding.Update(deliveryVehicles.SmallVehicles);
             m_GarbageTruckCountBinding.Update(m_GarbageTruckQuery.CalculateEntityCount());
-            m_CargoTrainCountBinding.Update(CountCargoTrains());
+            UpdateCargoTrains();
             m_RenewableElectricityShareBinding.Update(Share(SumCapacity(m_RenewableElectricityProducerQuery), SumCapacity(m_ElectricityProducerQuery)));
         }
 
@@ -167,60 +172,22 @@ namespace SolarpunkMod.Info
             foreach (var sample in m_ModalSamples)
                 total.Add(sample);
 
-            var travellerCount = total.TravellerCount;
-            m_CarShareBinding.Update(Share(total.Car, travellerCount));
-            m_BicycleShareBinding.Update(Share(total.Bicycle, travellerCount));
-            m_PublicTransportShareBinding.Update(Share(total.PublicTransport, travellerCount));
-            m_WalkingShareBinding.Update(Share(total.Walking, travellerCount));
+            m_CarShareBinding.Update(total.ShareOf(total.Car));
+            m_BicycleShareBinding.Update(total.ShareOf(total.Bicycle));
+            m_PublicTransportShareBinding.Update(total.ShareOf(total.PublicTransport));
+            m_WalkingShareBinding.Update(total.ShareOf(total.Walking));
         }
 
         private ModalCounts SampleModalCounts()
         {
-            m_CurrentVehicleLookup.Update(this);
-            m_HumanCurrentLaneLookup.Update(this);
-            m_TaxiStandLookup.Update(this);
-            m_BicycleLookup.Update(this);
-            m_PersonalCarLookup.Update(this);
-            m_TaxiLookup.Update(this);
-            m_PublicTransportLookup.Update(this);
+            m_TravelModeClassifier.Update(this);
 
             var counts = new ModalCounts();
             using var entities = m_ResidentQuery.ToEntityArray(Allocator.Temp);
             using var residents = m_ResidentQuery.ToComponentDataArray<Resident>(Allocator.Temp);
-
             for (var i = 0; i < entities.Length; i++)
-            {
-                var flags = residents[i].m_Flags;
-                if ((flags & (ResidentFlags.DummyTraffic | ResidentFlags.Hangaround)) != 0)
-                    continue;
-
-                if (!m_CurrentVehicleLookup.TryGetComponent(entities[i], out var currentVehicle))
-                {
-                    if ((flags & ResidentFlags.WaitingTransport) == 0)
-                        counts.Walking++;
-                    else if (IsWaitingForTaxi(entities[i]))
-                        counts.Car++;
-                    else
-                        counts.PublicTransport++;
-                    continue;
-                }
-
-                var vehicle = currentVehicle.m_Vehicle;
-                if (m_BicycleLookup.HasComponent(vehicle))
-                    counts.Bicycle++;
-                else if (m_PersonalCarLookup.HasComponent(vehicle) || m_TaxiLookup.HasComponent(vehicle))
-                    counts.Car++;
-                else if (m_PublicTransportLookup.HasComponent(vehicle))
-                    counts.PublicTransport++;
-            }
-
+                counts.Count(m_TravelModeClassifier.Classify(entities[i], residents[i].m_Flags, out _));
             return counts;
-        }
-
-        private bool IsWaitingForTaxi(Entity resident)
-        {
-            return m_HumanCurrentLaneLookup.TryGetComponent(resident, out var currentLane)
-                && m_TaxiStandLookup.HasComponent(currentLane.m_QueueEntity);
         }
 
         private static int Count<T>(EntityQuery query, Func<T, bool> isCounted) where T : unmanaged, IComponentData
@@ -235,20 +202,60 @@ namespace SolarpunkMod.Info
             return count;
         }
 
-        private int CountCargoTrains()
+        /// <summary>Cargo trains on the move (leading vehicle, no through traffic), and the garbage aboard.</summary>
+        private void UpdateCargoTrains()
         {
+            m_LayoutLookup.Update(this);
+            m_ResourcesLookup.Update(this);
+
             using var entities = m_CargoTrainQuery.ToEntityArray(Allocator.Temp);
             using var controllers = m_CargoTrainQuery.ToComponentDataArray<Controller>(Allocator.Temp);
             using var cargoTransports = m_CargoTrainQuery.ToComponentDataArray<CargoTransport>(Allocator.Temp);
-            var count = 0;
+            int trainCount = 0, garbageTrainCount = 0, garbageOnTrains = 0;
             for (var i = 0; i < entities.Length; i++)
             {
                 var isLeadingVehicle = controllers[i].m_Controller == entities[i];
                 var isThroughTraffic = (cargoTransports[i].m_State & CargoTransportFlags.DummyTraffic) != 0;
-                if (isLeadingVehicle && !isThroughTraffic)
-                    count++;
+                if (!isLeadingVehicle || isThroughTraffic)
+                    continue;
+
+                trainCount++;
+                var garbage = GarbageAboard(entities[i]);
+                if (garbage > 0)
+                {
+                    garbageTrainCount++;
+                    garbageOnTrains += garbage;
+                }
             }
-            return count;
+            m_CargoTrainCountBinding.Update(trainCount);
+            m_GarbageTrainCountBinding.Update(garbageTrainCount);
+            m_GarbageOnTrainsBinding.Update(garbageOnTrains);
+        }
+
+        /// <summary>Garbage carried by every car of the train: each car keeps its own load.</summary>
+        private int GarbageAboard(Entity train)
+        {
+            if (!m_LayoutLookup.TryGetBuffer(train, out var layout) || layout.Length == 0)
+                return GarbageIn(train);
+
+            var amount = 0;
+            foreach (var car in layout)
+                amount += GarbageIn(car.m_Vehicle);
+            return amount;
+        }
+
+        private int GarbageIn(Entity vehicle)
+        {
+            if (!m_ResourcesLookup.TryGetBuffer(vehicle, out var resources))
+                return 0;
+
+            var amount = 0;
+            foreach (var resource in resources)
+            {
+                if (resource.m_Resource == Resource.Garbage)
+                    amount += resource.m_Amount;
+            }
+            return amount;
         }
 
         private static int SumCapacity(EntityQuery producerQuery)
@@ -263,24 +270,6 @@ namespace SolarpunkMod.Info
         private static float Share(int part, int total)
         {
             return total > 0 ? (float)part / total : 0f;
-        }
-
-        private struct ModalCounts
-        {
-            public int Car;
-            public int Bicycle;
-            public int PublicTransport;
-            public int Walking;
-
-            public int TravellerCount => Car + Bicycle + PublicTransport + Walking;
-
-            public void Add(ModalCounts other)
-            {
-                Car += other.Car;
-                Bicycle += other.Bicycle;
-                PublicTransport += other.PublicTransport;
-                Walking += other.Walking;
-            }
         }
     }
 }

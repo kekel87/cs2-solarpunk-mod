@@ -1,14 +1,10 @@
 import { ValueBinding, useValue } from "cs2/api";
-import * as l10n from "cs2/l10n";
-import { LocComponent, LocalizedNumberProps, LocalizedPercentage, Unit } from "cs2/l10n";
+import { LocalizedPercentage, Unit } from "cs2/l10n";
 import { Panel, PanelSection, PanelSectionRow } from "cs2/ui";
 import * as bindings from "info/city-info-bindings";
 import { useInfoText } from "info/city-info-text";
 import styles from "info/city-info-panel.module.scss";
-
-// The shipped cs2/l10n typings declare LocalizedNumber as both an interface and a component, so
-// TypeScript only sees the interface; the game does export the component at runtime.
-const LocalizedNumber = (l10n as unknown as { LocalizedNumber: LocComponent<LocalizedNumberProps> }).LocalizedNumber;
+import { LocalizedNumber } from "info/localized-number";
 
 type RowProps = { labelKey: string; binding: ValueBinding<number> };
 
@@ -38,8 +34,17 @@ export const CityInfoPanel = ({ onClose }: { onClose: () => void }) => {
         <PanelSectionRow uppercase left={infoText("VEHICLES")} />
         <CountRow labelKey="PERSONAL_CARS" binding={bindings.personalCarCount} />
         <CountRow labelKey="DELIVERY_TRUCKS" binding={bindings.deliveryTruckCount} />
+        <CountRow labelKey="SMALL_DELIVERY_VEHICLES" binding={bindings.smallDeliveryVehicleCount} />
         <CountRow labelKey="GARBAGE_TRUCKS" binding={bindings.garbageTruckCount} />
         <CountRow labelKey="CARGO_TRAINS" binding={bindings.cargoTrainCount} />
+      </PanelSection>
+      <PanelSection tooltip={infoText("GARBAGE_ON_TRAINS_TOOLTIP")}>
+        <PanelSectionRow uppercase left={infoText("GARBAGE_ON_TRAINS")} />
+        <CountRow labelKey="GARBAGE_TRAINS" binding={bindings.garbageTrainCount} />
+        <PanelSectionRow
+          left={infoText("GARBAGE_ABOARD")}
+          right={<LocalizedNumber value={useValue(bindings.garbageOnTrains)} unit={Unit.Weight} />}
+        />
       </PanelSection>
       <PanelSection tooltip={infoText("RENEWABLE_TOOLTIP")}>
         <PanelSectionRow uppercase left={infoText("ELECTRICITY")} />

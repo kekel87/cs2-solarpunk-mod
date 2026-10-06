@@ -15,9 +15,10 @@ namespace SolarpunkMod.Policies
     /// </summary>
     public partial class ImpoundSystem : GameSystemBase
     {
-        // Six hours on the in-game clock: a game day is also a month, so a realistic notice in days
+        // A notice of hours on the in-game clock: a game day is also a month, so a realistic notice in days
         // would outlast whole neighbourhoods being built.
-        private const uint GracePeriodFrames = TimeSystem.kTicksPerDay / 4;
+        internal const int GracePeriodHours = 6;
+        private const uint GracePeriodFrames = TimeSystem.kTicksPerDay * GracePeriodHours / 24;
         private const int UpdateIntervalInFrames = 4096;
 
         private EndResidentialParkingPolicySystem m_PolicySystem;
