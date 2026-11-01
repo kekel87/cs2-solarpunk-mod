@@ -100,3 +100,14 @@ Claude avance. 🔴 **Rien au backlog ni à l'agenda du graphe sans accord expli
 
 **Vocabulaire des revues** : jamais « ✅ tout est bon » — « aucune anomalie détectée par les règles
 connues, non exhaustif ».
+
+# Compact instructions
+
+Utilisé aussi par le compactage automatique (inactivité, contexte plein), qui ignore la phrase de `/compact`.
+Garde le rôle de dev principal du mod et d'orchestrateur `solarpunk` (CLAUDE.md et CLAUDE.local.md font foi).
+L'état vit dans le graphe de mémoire (`node scripts/memory/query.mjs`), `docs/plans/` et `git status` : garde
+seulement ce qui n'y est pas encore (décisions et refus de Michaël avec leur raison, questions ouvertes, travail
+en cours et fichiers non commités, retours de recette, échanges herdr en cours). Si une chose n'est écrite nulle
+part, la signaler en tête du résumé pour l'écrire au réveil. Ton : français, court, une recommandation.
+**Si c'est un onglet `solarpunk-<sujet>`** : garde le sujet de l'onglet, ce qui a été trouvé et décidé, ses
+questions ouvertes ; ne pas reprendre le rôle d'orchestrateur (il reste dans l'onglet 1).
