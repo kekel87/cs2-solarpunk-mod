@@ -7,7 +7,7 @@ user-invocable: true
 Pop le menu de finalisation **maintenant**. Déclencheurs : `/menu`, ou le mot **`menu`** seul.
 
 ⚠️ Arrêt 2 du workflow. Si la recette humaine n'a pas eu lieu et que le changement est observable
-en jeu, pose d'abord l'arrêt 1 (« Tu testes ? ») — sauf si l'humain demande le menu explicitement.
+en jeu, pose d'abord l'arrêt 1 (« Tu testes ? »), sauf si l'humain demande le menu explicitement.
 
 ## Étapes
 
@@ -21,7 +21,7 @@ en jeu, pose d'abord l'arrêt 1 (« Tu testes ? ») — sauf si l'humain demande
    | Option | Pré-coché si |
    |--------|--------------|
    | `doc-keeper` | `docs/` impactés, décision ou fait à consigner au graphe, nouvelle mécanique |
-   | `build + commit` | **toujours** — `dotnet build` (Release, post-process compris) vert, puis commit + push |
+   | `build + commit` | **toujours** : `dotnet build` (Release, post-process compris) vert, puis commit + push |
 
    - **Plan en rédaction** : menu remplacé par `[x] plan-reviewer`, `[ ] game-designer` (si
      mécanique de sim). 🔴 Jamais d'option « commiter le plan ».

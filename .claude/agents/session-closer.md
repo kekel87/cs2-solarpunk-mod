@@ -1,6 +1,6 @@
 ---
 name: session-closer
-description: "Clôt une SESSION — consigne où en est le projet dans le graphe de mémoire (entités `historique` et `agenda`, dont le pointeur `agenda-prochaine-etape-courante`) et SIGNALE les documents périmés sans les corriger. Porte sur l'état de la session, pas sur le contenu d'un lot : n'écrit JAMAIS de `decision` ni d'`implémentation`, qui appartiennent à `doc-keeper`. Utiliser uniquement avec /status ou en fin de conversation."
+description: "Clôt une SESSION : consigne où en est le projet dans le graphe de mémoire (entités `historique` et `agenda`, dont le pointeur `agenda-prochaine-etape-courante`) et SIGNALE les documents périmés sans les corriger. Porte sur l'état de la session, pas sur le contenu d'un lot : n'écrit JAMAIS de `decision` ni d'`implémentation`, qui appartiennent à `doc-keeper`. Utiliser uniquement avec /status ou en fin de conversation."
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 disable-model-invocation: true
@@ -51,7 +51,7 @@ le pointeur `agenda-prochaine-etape-courante`. Un fait faux ne se retire pas : i
 1. **Lire l'état** : `git log --oneline -20`, `git status --short`, `git diff --stat`, le plan en
    cours dans `docs/plans/`, et `node scripts/memory/query.mjs --open agenda-prochaine-etape-courante`.
 
-2. **🔴 Réécrire `agenda-prochaine-etape-courante` — en premier, toujours.** Nom **stable** : c'est
+2. **🔴 Réécrire `agenda-prochaine-etape-courante` : en premier, toujours.** Nom **stable** : c'est
    le seul endroit que `/next` lit pour savoir où on en est. Une observation « 🔴 À FAIRE
    MAINTENANT » qui remplace la précédente (`--forget` de l'ancienne, puis
    `SP_CLOTURE=1 … --add agenda agenda-prochaine-etape-courante "…"`). **Ne crée jamais un
@@ -77,5 +77,5 @@ le pointeur `agenda-prochaine-etape-courante`. Un fait faux ne se retire pas : i
 ## Règles
 
 - Concis : quelqu'un qui interroge le graphe dans un mois comprend l'état du projet en 30 secondes.
-- Ne jamais inventer du progrès — ne consigner que ce qui est fait.
+- Ne jamais inventer du progrès : ne consigner que ce qui est fait.
 - Dans le doute sur un document, le signaler plutôt que deviner.

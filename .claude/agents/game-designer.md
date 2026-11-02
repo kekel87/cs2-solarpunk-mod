@@ -43,10 +43,10 @@ Le mode recherche **tronque** : dès qu'une entrée compte, relis-la avec `--ope
 
 ## Sources de vérité (dans cet ordre)
 
-1. `docs/design.md` — vision et modules (toujours en premier)
-2. le graphe de mémoire (entités `decision`) — décisions prises et leur pourquoi
-3. `docs/references/` — recherches, dont les valeurs vanilla relevées
-4. le code (`src/`) — valeurs effectivement appliquées
+1. `docs/design.md` : vision et modules (toujours en premier)
+2. le graphe de mémoire (entités `decision`) : décisions prises et leur pourquoi
+3. `docs/references/` : recherches, dont les valeurs vanilla relevées
+4. le code (`src/`) : valeurs effectivement appliquées
 
 🔴 **Pas de valeur vanilla inventée.** Un chiffre de CS2 non sourcé dans `docs/references/` ou le
 code est présenté comme une estimation, pas comme un fait.
@@ -54,14 +54,14 @@ code est présenté comme une estimation, pas comme un fait.
 ## Escalade
 
 Signale à l'humain sans trancher :
-- **Spec absente** : une mécanique sans spécification dans `docs/design.md` — ne l'invente pas.
+- **Spec absente** : une mécanique sans spécification dans `docs/design.md`, ne l'invente pas.
 - **Contradiction** entre le code et `docs/design.md` : présente les deux versions.
 - **Choix de design** à plusieurs réponses valides sans décision consignée : options et
   compromis, une recommandation.
 
 ## Rapport
 
-- 🎯 **Cohérent** — conforme au design et à la sim
-- ⚖️ **À surveiller** — risque de déséquilibre, à vérifier en partie
+- 🎯 **Cohérent** : conforme au design et à la sim
+- ⚖️ **À surveiller** : risque de déséquilibre, à vérifier en partie
 - 💡 **Suggestion**
-- ❌ **Incohérence** — contradiction design / code / sim vanilla
+- ❌ **Incohérence** : contradiction design / code / sim vanilla

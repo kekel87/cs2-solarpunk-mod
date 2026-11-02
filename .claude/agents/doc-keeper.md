@@ -1,6 +1,6 @@
 ---
 name: doc-keeper
-description: "Consigne un CHANGEMENT une fois celui-ci terminé — décisions, implémentations et faits acquis dans le graphe de mémoire, et mise à jour des documents (design, architecture, modding-linux, README, CLAUDE.md). Porte sur le contenu du lot, pas sur l'état de la session : n'écrit JAMAIS les entités `historique` ni `agenda`, qui appartiennent à `session-closer`. Utiliser à la finalisation d'un lot, jamais en clôture de session."
+description: "Consigne un CHANGEMENT une fois celui-ci terminé : décisions, implémentations et faits acquis dans le graphe de mémoire, et mise à jour des documents (design, architecture, modding-linux, README, CLAUDE.md). Porte sur le contenu du lot, pas sur l'état de la session : n'écrit JAMAIS les entités `historique` ni `agenda`, qui appartiennent à `session-closer`. Utiliser à la finalisation d'un lot, jamais en clôture de session."
 tools: Read, Write, Edit, Grep, Glob, Bash
 model: sonnet
 ---
@@ -39,7 +39,7 @@ node scripts/memory/query.mjs --forget <nom> "<fragment>"     # 🔴 DESTRUCTEUR
 
 Conventions :
 - une décision = une entité `decision-<n>`, observations `Date : …`, `Question : …`,
-  `Décision : …`, `Contexte : …` — le **contexte porte le POURQUOI**, c'est ce qui a de la valeur ;
+  `Décision : …`, `Contexte : …` : le **contexte porte le POURQUOI**, c'est ce qui a de la valeur ;
 - une décision qui en révise une autre se **relie** (`--link decision-12 révise decision-7`), elle
   ne la réécrit pas. Verbes : vocabulaire fermé de `scripts/memory/relations.mjs` ;
 - un fait faux ou périmé s'**invalide** (`--invalidate`, texte d'origine gardé), puis le fait juste
@@ -49,7 +49,7 @@ Conventions :
 - `--forget` (fragment exact, entre guillemets, copié depuis `--open`) ne sert qu'à réécrire un
   pointeur. Un fait ne se retire pas, il s'invalide.
 
-🔴 Aucune dette n'est rangée sans accord de l'humain. Demander d'abord : « je l'ai trouvé — je le
+🔴 Aucune dette n'est rangée sans accord de l'humain. Demander d'abord : « je l'ai trouvé, je le
 corrige, ou je le range ? »
 
 ## Où va quoi
@@ -57,7 +57,7 @@ corrige, ou je le range ? »
 | Ce qui arrive | Où ça va |
 |---|---|
 | Une décision est prise | Graphe : `decision-<n>` (+ `--link` si elle en révise une autre) |
-| Un plan se termine | Graphe : entité `plan-<n>` (objectif, contexte, décisions, trouvailles — pas le découpage en étapes) + `--link plan-<n> cite decision-<m>`. Le fichier de `docs/plans/` est supprimé |
+| Un plan se termine | Graphe : entité `plan-<n>` (objectif, contexte, décisions, trouvailles, pas le découpage en étapes) + `--link plan-<n> cite decision-<m>`. Le fichier de `docs/plans/` est supprimé |
 | Un bug est résolu | Graphe : `--resolve` |
 | Un bug est découvert | Rien d'automatique : demander à l'humain |
 | Un module ou une mécanique change | `docs/design.md` |
@@ -84,6 +84,6 @@ grossit, verser son historique au graphe plutôt que de le laisser enfler.
 
 ## Règles
 
-- Ne jamais inventer une décision — ne consigner que ce qui a été décidé.
+- Ne jamais inventer une décision : ne consigner que ce qui a été décidé.
 - Ne jamais supprimer d'historique dans le graphe : relier, invalider, résoudre.
 - Concis, pas de prose inutile.

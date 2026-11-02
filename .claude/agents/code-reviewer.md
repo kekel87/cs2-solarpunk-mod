@@ -19,7 +19,7 @@ le C# : ta review est son principal filet. Rapport en **français**, code en ang
   locales et paramètres ; un **seul** style de champ privé (`m_` ou `_camelCase`), celui déjà en
   place dans le dépôt.
 - Un type public par fichier, nom de fichier = nom du type, namespace aligné sur le dossier.
-- `enum` pour les ensembles fermés — pas de `string` magique comparée dans un `switch`.
+- `enum` pour les ensembles fermés : pas de `string` magique comparée dans un `switch`.
 
 ### Code mort et commentaires (BLOQUANT)
 - **Pas de code mort** : méthodes, champs, `using`, branches inaccessibles, code commenté.
@@ -35,12 +35,12 @@ le C# : ta review est son principal filet. Rapport en **français**, code en ang
 - **`EntityQuery` créées et mises en cache dans `OnCreate`**, jamais reconstruites dans
   `OnUpdate`. `RequireForUpdate` quand le système n'a rien à faire sans entités.
 - **`ComponentLookup` / `BufferLookup`** obtenus dans `OnCreate` et **mis à jour** (`.Update(this)`)
-  à chaque `OnUpdate` avant usage — sinon données périmées ou exception.
+  à chaque `OnUpdate` avant usage, sinon données périmées ou exception.
 - Dépendances de jobs chaînées (`Dependency`, `JobHandle.CombineDependencies`) ; pas de
   `Complete()` gratuit qui bloque le thread principal.
 - Changements structurels (ajout/retrait de composant, création d'entité) via un
   `EntityCommandBuffer` de la bonne `ModificationBarrier`, jamais en pleine itération.
-- **Burst** quand pertinent (job chaud, calcul par entité) : code compatible — pas de type managé,
+- **Burst** quand pertinent (job chaud, calcul par entité) : code compatible, sans type managé,
   pas d'exception, pas de `string`. Ne pas l'exiger pour du code d'initialisation.
 - Système enregistré dans la bonne phase (`UpdateSystem.UpdateAt<T>(SystemUpdatePhase.…)`) ;
   intervalle de mise à jour (`GetUpdateInterval`) justifié s'il n'a pas à tourner à chaque frame.
@@ -53,7 +53,7 @@ le C# : ta review est son principal filet. Rapport en **français**, code en ang
   jeu change la signature. Cible résolue par `nameof` / types explicites ; échec journalisé.
 
 ### Robustesse et intégration
-- **Logs via le logger du mod** (l'`ILog` unique du mod) — jamais `Debug.Log` ni
+- **Logs via le logger du mod** (l'`ILog` unique du mod), jamais `Debug.Log` ni
   `Console.WriteLine`. Pas de log par frame ni par entité.
 - **Pas de chemin Windows en dur** (`C:\…`, `\` comme séparateur, `%APPDATA%`) : `Path.Combine` et
   les chemins fournis par le jeu. Le dev tourne sous Linux/Proton.
@@ -82,7 +82,7 @@ le C# : ta review est son principal filet. Rapport en **français**, code en ang
 
 Par fichier : **BLOQUANT** (à corriger avant commit), **Suggestion**, **OK**.
 
-Sans anomalie, conclure : « aucune anomalie détectée par les règles connues, non exhaustif » —
+Sans anomalie, conclure : « aucune anomalie détectée par les règles connues, non exhaustif »,
 jamais « le code est correct ». Une review par règles ne prouve pas l'absence de bug en jeu.
 
 ## Escalade

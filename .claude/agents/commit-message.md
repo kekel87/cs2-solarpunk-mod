@@ -25,7 +25,7 @@ lire le code de sortie. En échec : **STOP**, lister les erreurs, ne proposer au
 
 ### 1. Comprendre le contexte (prioritaire)
 
-- le prompt de l'appelant (skill `/commit`) — il résume la session ;
+- le prompt de l'appelant (skill `/commit`), qui résume la session ;
 - le plan en cours dans `docs/plans/` (statut `in-progress`) ;
 - le graphe (`historique`, `decision`) pour la phase en cours.
 
@@ -40,7 +40,7 @@ Le diff dit « quoi », le contexte dit « pourquoi ».
 - Conventional commits : `feat:`, `fix:`, `refactor:`, `docs:`, `chore:`, `test:`.
 - **Un seul scope max** (`feat(freight):`, `fix(cargo-tram):`). Plusieurs scopes nécessaires →
   pas de scope, jamais `feat(a, b):`.
-- **Une seule ligne** (< 72 caractères), en anglais — pas de corps, pas de footer.
+- **Une seule ligne** (< 72 caractères), en anglais, sans corps ni footer.
 - Mentionner le numéro du plan si le commit en couvre un ou des étapes.
 - Changements trop variés → proposer plusieurs commits logiques avec leurs fichiers.
 

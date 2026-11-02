@@ -33,7 +33,7 @@ created: AAAA-MM-JJ
 updated: AAAA-MM-JJ
 ---
 
-# Plan NNN — Titre clair
+# Plan NNN : Titre clair
 
 ## Ce que tu verras en jeu
 3 à 5 lignes : le résultat observable dans une partie, pas l'architecture.
@@ -45,8 +45,8 @@ updated: AAAA-MM-JJ
 Pourquoi maintenant, quelles décisions y mènent.
 
 ## Étapes
-- [ ] Étape 1 — description concrète
-- [ ] Étape 2 — …
+- [ ] Étape 1 : description concrète
+- [ ] Étape 2 : …
 
 ## Critères de complétion
 Comment on sait que c'est fini (en jeu, et build vert).

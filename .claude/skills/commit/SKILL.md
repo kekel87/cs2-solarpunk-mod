@@ -4,7 +4,7 @@ description: Génère un message de commit conventional court (titre seul) via l
 user-invocable: true
 ---
 
-1. `git diff --stat HEAD` et `git status --porcelain` — rien à commiter → stop.
+1. `git diff --stat HEAD` et `git status --porcelain` : rien à commiter → stop.
 2. Si du code C# a changé : `dotnet build` doit être vert dans le tour, sinon le lancer d'abord.
 3. Agent `commit-message` (contexte de session dans le prompt : plan en cours, résumé).
 4. `git add` + `git commit -m "<message>"` + `git push`. Stop sur fail.

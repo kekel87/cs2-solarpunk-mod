@@ -3,7 +3,7 @@ name: next
 description: Reconstitue l'état du projet depuis le graphe de mémoire, propose 2-3 candidats et une recommandation.
 ---
 
-**D'abord** : `git fetch origin`, puis compare `main`, `origin/main` et les branches locales — ne
+**D'abord** : `git fetch origin`, puis compare `main`, `origin/main` et les branches locales, ne
 jamais repartir d'un `main` en retard.
 
 ## L'état vient du graphe de mémoire
@@ -33,10 +33,10 @@ Puis, si le sujet l'exige : `docs/design.md` (modules) et le plan en cours dans 
 
 ## Présente
 
-1. **À faire maintenant** — 2-3 candidats, une ligne chacun, puis **une recommandation**.
-2. **Reporté** — entités `agenda` / `backlog` ouvertes. Rien → le dire.
-3. **Fait récemment** — 3 à 5 items, croisés avec `git log -5`.
-4. **Bloquants** — questions à trancher avant de démarrer.
+1. **À faire maintenant** : 2-3 candidats, une ligne chacun, puis **une recommandation**.
+2. **Reporté** : entités `agenda` / `backlog` ouvertes. Rien → le dire.
+3. **Fait récemment** : 3 à 5 items, croisés avec `git log -5`.
+4. **Bloquants** : questions à trancher avant de démarrer.
 
 Concis : 10-15 lignes.
 
