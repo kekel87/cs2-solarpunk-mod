@@ -17,6 +17,15 @@ Continuité : peut revenir après des semaines → graphe de mémoire et `docs/p
 
 Claude = dev principal, autonome sur l'implémentation, valide le design avec l'humain.
 
+## Réponses
+
+- Décision demandée : question fermée, numérotée (4 max), avec le défaut et sa raison en une ligne
+- Fait = vérifié sur le vrai résultat (en jeu, log du mod, diff) ; « ça compile » ou un rapport d'agent ne
+  suffit pas. Si une vérification échoue, soupçonner d'abord la façon d'observer
+- Commande locale, réversible, sans effet de bord (build, lecture de log) : la lancer, le dire en une ligne
+- Correction courte : corriger, une ligne, avancer. Donner l'état actuel, pas l'historique des essais
+- Volumes vérifiables (fichiers, scénarios), jamais de durée
+
 ## Docs — quoi lire quand
 
 | Où lire | Trigger |
@@ -28,8 +37,6 @@ Claude = dev principal, autonome sur l'implémentation, valide le design avec l'
 | `docs/references/base-connaissances/` | **Avant de coder ou de produire un asset** : quoi lire dans le plugin `cs2-modding` selon le module, conventions C#/ECS et UI de notre contexte, mécaniques du jeu vérifiées, pipeline 3D, leçons. Chercher les pratiques établies (base, skills `cs2-modding`, web) AVANT de produire |
 | `docs/references/` | Recherches : code décompilé du jeu, mods existants |
 | `docs/plans/` | Plan en cours avant coder |
-
-Pas tout charger. Lire le fichier pertinent au moment pertinent.
 
 ## Principes
 
@@ -51,7 +58,6 @@ Pas tout charger. Lire le fichier pertinent au moment pertinent.
   seul**, court. **1 scope max**, sinon aucun. Détails → graphe ou plan en cours
 - **Langue** : code anglais, doc et communication français
 - **Nommage** : pas d'abréviations (`vehicleCapacity` pas `vehCap`)
-- **Écriture code** : Edit > Write. Petits Edit successifs
 - **Code mort** : zéro tolérance
 - **Plans** : `docs/plans/NNN-nom.md` numérotés, statut en en-tête
 
