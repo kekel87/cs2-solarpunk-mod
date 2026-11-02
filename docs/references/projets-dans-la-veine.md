@@ -91,3 +91,28 @@ fermes verticales (repoussoir).
 
 **Enchaînement POC suggéré** : train-poubelle (2) → panneau (1) → point de service (3) — des trains au
 lieu de bennes, un compteur qui le prouve, un quartier livré sans camion.
+
+## Jeux de trafic à venir (idée « jeu de zéro »)
+
+> Relevé du 11/10/2026, **depuis les pages Steam seulement** [V pour la page, S pour la profondeur] :
+> aucun des trois n'est sorti, rien n'a été joué.
+
+| | Trafficity | Highways & Co. | Junxions |
+|---|---|---|---|
+| Dév. | Onramp Games | iamsahaj (solo) | CyberStorm / Hooded Horse |
+| Sortie | 16/11/2026 | 2026 | 2026 |
+| Vue | 2D top-down | 2.5D top-down stylisé | 3D |
+| Cœur | Ville + trafic + économie | Puzzle d'échangeurs, campagne | Ingénierie de trafic, défis + bac à sable |
+| Vélo / transit | non mentionnés | non mentionnés (rail, passages à niveau oui) | **pistes cyclables, voies bus, tram, rail, piétons** |
+| Mods | non mentionné | non mentionné | promis au lancement (cartes, modèles) |
+
+Liens : [Trafficity](https://store.steampowered.com/app/5185750/Trafficity/) ·
+[Highways & Co.](https://store.steampowered.com/app/5096600/Highways__Co/) ·
+[Junxions](https://store.steampowered.com/app/1447250/Junxions/).
+
+- **Trafficity — le minimalisme plaît à l'humain.** 2D top-down, rendu sobre : la preuve qu'un jeu
+  n'a pas besoin d'être un AAA pour être jouable. Référence visuelle pour tout futur jeu autonome
+  (ou pour la sobriété d'une UI de mod). Mais 100 % voiture : pas de vélo ni de transit.
+- **Junxions** : seul des trois à traiter vélo, tram, bus et piétons comme citoyens de la rue ;
+  moddable. Piste d'inspiration (profils de rue, carrefours avec voies dédiées).
+- **Trou constaté** : aucun ne fait d'une ville sans voiture (vélo, rail, fret décarboné) la base.
