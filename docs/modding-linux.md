@@ -138,6 +138,9 @@ Modèles générés par scripts Python Blender (`assets/vehicles`, `assets/build
   `flatpak run com.valvesoftware.Steam -applaunch 949230 -startEditor`.
 - Le jeu **plante** sur la capture d'écran du jeu ou Alt+Tab : utiliser la capture d'écran Fedora.
 - Les « Erreurs système » `Cannot abort request with ID` viennent de l'UI du jeu, sans gravité.
+- Build en échec `Invalid MIT-MAGIC-COOKIE-1 key` (post-processing) : le `XAUTHORITY` du terminal pointe
+  vers une ancienne clé Xwayland (session rouverte). Prendre la plus récente :
+  `export XAUTHORITY=$(ls -t /run/user/1000/.mutter-Xwaylandauth.* | head -1)` [C, 06/10/2026].
 
 ## Dépendances de mods
 
