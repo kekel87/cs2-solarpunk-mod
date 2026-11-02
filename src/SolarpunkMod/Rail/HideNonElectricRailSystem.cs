@@ -24,7 +24,7 @@ namespace SolarpunkMod.Rail
 
         private PrefabSystem m_PrefabSystem;
         private EntityQuery m_ToolbarObjectQuery;
-        private bool m_TrainTabMarked;
+        private Entity m_TrainCategory;
 
         protected override void OnCreate()
         {
@@ -36,24 +36,42 @@ namespace SolarpunkMod.Rail
         protected override void OnGamePreload(Purpose purpose, GameMode mode)
         {
             base.OnGamePreload(purpose, mode);
-            if (m_TrainTabMarked || !RailTabIcons.Available)
+            if (m_TrainCategory != Entity.Null)
                 return;
 
-            var trainCategory = FindTrainCategory();
-            if (trainCategory == Entity.Null)
-                return;
-            m_PrefabSystem.GetPrefab<UIAssetCategoryPrefab>(trainCategory).GetComponent<UIObject>().m_Icon = RailTabIcons.Electric;
-            m_TrainTabMarked = true;
+            m_TrainCategory = FindTrainCategory();
+            if (m_TrainCategory != Entity.Null && RailTabIcons.Available)
+                m_PrefabSystem.GetPrefab<UIAssetCategoryPrefab>(m_TrainCategory).GetComponent<UIObject>().m_Icon = RailTabIcons.Electric;
         }
 
         protected override void OnGameLoadingComplete(Purpose purpose, GameMode mode)
         {
             base.OnGameLoadingComplete(purpose, mode);
             HideNonElectricAssets();
+            LogTrainTab();
         }
 
         protected override void OnUpdate()
         {
+        }
+
+        /// <summary>
+        /// Temporary diagnosis (recette of 06/10): two Train tab entries show no name nor thumbnail.
+        /// Lists every entry with its icon, to find them; remove once found.
+        /// </summary>
+        private void LogTrainTab()
+        {
+            if (m_TrainCategory == Entity.Null)
+                return;
+            var entries = new List<string>();
+            foreach (var element in EntityManager.GetBuffer<UIGroupElement>(m_TrainCategory))
+            {
+                var icon = m_PrefabSystem.TryGetPrefab<PrefabBase>(element.m_Prefab, out var prefab) && prefab.TryGet<UIObject>(out var uiObject)
+                    ? uiObject.m_Icon
+                    : "no UIObject";
+                entries.Add($"{m_PrefabSystem.GetPrefabName(element.m_Prefab)} [{icon}]");
+            }
+            Mod.Log.Info($"Train tab ({entries.Count}): {string.Join(", ", entries)}");
         }
 
         /// <summary>
